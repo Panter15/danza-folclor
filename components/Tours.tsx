@@ -9,6 +9,7 @@ export function Tours() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
   const track = useRef<HTMLDivElement>(null);
+  const bar = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -30,6 +31,11 @@ export function Tours() {
             invalidateOnRefresh: true,
           },
         });
+
+        // Follow the cards' own (smoothed) progress, not the raw scroll, so the bar
+        // and the cards finish together. Attached after creation because GSAP runs
+        // onUpdate once while the tween is being built, before `slide` exists.
+        slide.eventCallback("onUpdate", () => gsap.set(bar.current, { scaleX: slide.progress() }));
 
         // Each card's "photo" drifts slightly as it crosses the screen (parallax inside the card).
         gsap.utils.toArray<HTMLElement>(".tour-media").forEach((media) => {
@@ -60,9 +66,8 @@ export function Tours() {
         <div className="mb-10 flex items-end justify-between gap-4 px-4 md:px-8 lg:pl-48">
           <h2 className="display text-[12vw] md:text-[6vw]">
             {t("toursTitle")}{" "}
-            <span className="font-serif text-[0.45em] font-normal tracking-normal text-mute">{t("toursHint")}</span>
+            <span className="font-serif text-[0.45em] font-normal tracking-normal text-mute">{t("toursSubtitle")}</span>
           </h2>
-          <p className="label shrink-0 text-mute">→</p>
         </div>
 
         {/* With reduced motion there is no pinned scroll, so let people swipe the cards sideways instead. */}
@@ -88,6 +93,13 @@ export function Tours() {
               </article>
             ))}
           </div>
+        </div>
+
+        {/* Natural mapping: a horizontal bar that fills left → right as the cards
+            slide, so the sideways movement explains itself. Hidden with reduced
+            motion, where the row is swiped instead. */}
+        <div className="mx-4 mt-10 h-px bg-line md:mx-8 lg:ml-48 motion-reduce:hidden" aria-hidden="true">
+          <div ref={bar} className="h-full origin-left bg-ink" style={{ transform: "scaleX(0)" }} />
         </div>
       </div>
     </section>

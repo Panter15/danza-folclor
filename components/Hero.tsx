@@ -124,15 +124,12 @@ export function Hero() {
           ease: "none",
           scrollTrigger: { trigger: root.current, start: "top top", end: "30% top", scrub: true },
         });
-        gsap.fromTo(
-          ".hero-spin",
-          { opacity: 0 },
-          {
-            opacity: 1,
-            ease: "none",
-            scrollTrigger: { trigger: root.current, start: "35% top", end: "55% top", scrub: true },
-          },
-        );
+        // The scroll cue has done its job once the visitor starts scrolling.
+        gsap.to(".scroll-cue", {
+          opacity: 0,
+          ease: "none",
+          scrollTrigger: { trigger: root.current, start: "top top", end: "8% top", scrub: true },
+        });
       });
       mm.add("(prefers-reduced-motion: reduce)", () => {
         state.p = 1;
@@ -168,9 +165,11 @@ export function Hero() {
           </h1>
         </div>
 
-        <p className="hero-spin label absolute bottom-8 right-6 text-ink opacity-0 md:right-8">
-          {t("heroSpin")} ↻
-        </p>
+        {/* Signifier instead of a "scroll down" instruction: a dot travelling
+            down a line says "there is more below" without any words. */}
+        <div className="scroll-cue absolute bottom-10 right-6 h-14 w-px bg-ink/15 md:right-8" aria-hidden="true">
+          <span className="scroll-cue-dot absolute -left-[2px] top-0 h-[5px] w-[5px] rounded-full bg-ink" />
+        </div>
       </div>
     </section>
   );
