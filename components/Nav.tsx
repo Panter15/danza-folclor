@@ -16,10 +16,11 @@ export function Nav() {
   return (
     <header className="fixed inset-x-0 top-0 z-50 mix-blend-difference text-white">
       <nav className="flex items-center justify-between px-4 py-4 md:px-8">
-        <a href="#top" className="font-display text-lg tracking-tight">
+        <a href="#top" className="display text-xl">
           {group.name}
         </a>
-        <ul className="hidden gap-6 text-sm uppercase tracking-widest md:flex">
+        {/* On large screens the side navigation takes over. */}
+        <ul className="label hidden gap-6 md:flex lg:hidden">
           {links.map((link) => (
             <li key={link.href}>
               <a href={link.href} className="hover:opacity-60 transition-opacity">
@@ -31,7 +32,7 @@ export function Nav() {
         <button
           type="button"
           onClick={() => setLang(lang === "es" ? "en" : "es")}
-          className="rounded-full border border-white/60 px-3 py-1 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-colors"
+          className="label border border-white/60 px-3 py-1 transition-colors hover:bg-white hover:text-black"
           aria-label={lang === "es" ? "Switch to English" : "Cambiar a español"}
         >
           {lang === "es" ? "EN" : "ES"}
