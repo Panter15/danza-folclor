@@ -1,121 +1,136 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { gsap, useGSAP } from "@/lib/gsap";
+import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { performances } from "@/content/site";
 import { useLanguage } from "./LanguageProvider";
 
+const THUMB_HEIGHT = 156; // px, matches h-[156px] on each thumbnail
+
+/**
+ * Art of Documentary "slide-over": a blurred full-screen photo sits behind the
+ * text and cross-fades as each dance scrolls past. A small sharp thumbnail strip,
+ * framed with corner brackets, shows which photo you are on.
+ */
 export function Performances() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
-  const preview = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState<number | null>(null);
-
-  const moveTo = useRef<{ x: (v: number) => void; y: (v: number) => void } | null>(null);
+  const [active, setActive] = useState(0);
 
   useGSAP(
     () => {
-      gsap.set(preview.current, { xPercent: -50, yPercent: -50, scale: 0, opacity: 0 });
-
-      // quickTo creates a reusable, smoothed setter: the preview "chases" the cursor.
-      moveTo.current = {
-        x: gsap.quickTo(preview.current, "x", { duration: 0.5, ease: "power3" }),
-        y: gsap.quickTo(preview.current, "y", { duration: 0.5, ease: "power3" }),
-      };
+      gsap.utils.toArray<HTMLElement>(".perf-item").forEach((item, i) => {
+        ScrollTrigger.create({
+          trigger: item,
+          start: "top center",
+          end: "bottom center",
+          onToggle: (self) => self.isActive && setActive(i),
+        });
+      });
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from(".perf-row", {
-          y: 60,
-          opacity: 0,
-          duration: 0.9,
-          ease: "power3.out",
-          stagger: 0.08,
-          scrollTrigger: { trigger: ".perf-list", start: "top 80%" },
+        gsap.utils.toArray<HTMLElement>(".perf-copy").forEach((copy) => {
+          gsap.from(copy.children, {
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            stagger: 0.08,
+            scrollTrigger: { trigger: copy, start: "top 75%" },
+          });
         });
       });
     },
     { scope: root },
   );
 
-  useGSAP(
-    () => {
-      gsap.to(preview.current, {
-        scale: active === null ? 0 : 1,
-        opacity: active === null ? 0 : 1,
-        duration: 0.4,
-        ease: "power3.out",
-      });
-    },
-    { dependencies: [active], scope: root },
-  );
-
-  const handleMouseMove = (event: React.MouseEvent) => {
-    const bounds = root.current?.getBoundingClientRect();
-    if (!bounds || !moveTo.current) return;
-    moveTo.current.x(event.clientX - bounds.left);
-    moveTo.current.y(event.clientY - bounds.top);
-  };
-
-  const current = active === null ? null : performances[active];
-
   return (
-    <section
-      ref={root}
-      id="presentaciones"
-      onMouseMove={handleMouseMove}
-      className="relative overflow-hidden bg-ink px-4 py-28 text-paper md:px-8 md:py-40"
-    >
-      <div className="mb-14 flex flex-wrap items-end justify-between gap-4">
-        <h2 className="font-display text-5xl md:text-7xl">{t("performancesTitle")}</h2>
-        <p className="hidden text-xs uppercase tracking-[0.3em] text-paper/50 md:block">
-          {t("performancesHint")}
-        </p>
-      </div>
+    <section ref={root} id="presentaciones" className="bg-paper text-ink">
+      <header className="px-4 pb-16 pt-28 md:px-8 md:pt-40 lg:pl-48">
+        <p className="label mb-6 text-mute">{t("navPerformances")}</p>
+        <h2 className="display max-w-5xl text-[12vw] md:text-[6vw]">
+          {t("performancesTitle")}{" "}
+          <span className="font-serif font-normal tracking-normal text-mute">{t("performancesIntro")}</span>
+        </h2>
+      </header>
 
-      <ul className="perf-list border-t border-paper/20" onMouseLeave={() => setActive(null)}>
-        {performances.map((perf, i) => (
-          <li
-            key={perf.name}
-            onMouseEnter={() => setActive(i)}
-            className="perf-row group grid cursor-default grid-cols-[auto_1fr] items-baseline gap-x-6 gap-y-2 border-b border-paper/20 py-6 md:grid-cols-[4rem_1fr_1fr_auto] md:py-8"
-          >
-            <span className="text-xs text-paper/40">{String(i + 1).padStart(2, "0")}</span>
-            <span className="font-display text-4xl transition-transform duration-500 group-hover:translate-x-4 md:text-6xl">
-              {perf.name}
-            </span>
-            <span className="col-start-2 text-sm text-paper/60 md:col-start-auto">{perf.description[lang]}</span>
-            <span className="col-start-2 text-xs uppercase tracking-[0.3em] text-paper/50 md:col-start-auto">
-              {perf.region[lang]}
-            </span>
-            {/* Mobile has no hover, so show the colour swatch inline instead. */}
-            <span
-              className="col-start-2 mt-2 h-24 rounded md:hidden"
-              style={{ background: `linear-gradient(135deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
+      <div className="relative">
+        {/* Sticky layer: blurred backgrounds + thumbnail strip. */}
+        <div className="sticky top-0 h-svh overflow-hidden">
+          {performances.map((perf, i) => (
+            <div
+              key={perf.name}
+              className="absolute inset-0 scale-110 blur-2xl transition-opacity duration-1000"
+              style={{
+                opacity: i === active ? 1 : 0,
+                background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})`,
+              }}
               aria-hidden="true"
             />
-          </li>
-        ))}
-      </ul>
+          ))}
+          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
 
-      {/* Floating preview that follows the cursor (desktop only). Swap the gradient for the real photo. */}
-      <div
-        ref={preview}
-        className="pointer-events-none absolute left-0 top-0 hidden h-72 w-56 overflow-hidden rounded md:block"
-        style={{ opacity: 0 }}
-        aria-hidden="true"
-      >
-        {current && (
+          {/* Thumbnail strip: the framed one is the current dance. */}
           <div
-            className="flex h-full w-full items-end p-4"
-            style={{ background: `linear-gradient(160deg, ${current.palette[0]}, ${current.palette[1]})` }}
+            className="absolute bottom-8 right-8 hidden h-[168px] w-[128px] md:block"
+            aria-hidden="true"
           >
-            <span className="text-xs uppercase tracking-[0.3em] text-white mix-blend-difference">
-              {current.name}
-            </span>
+            <Brackets />
+            <div className="absolute inset-[6px] overflow-hidden">
+              <div
+                className="transition-transform duration-700 ease-out"
+                style={{ transform: `translateY(${-active * THUMB_HEIGHT}px)` }}
+              >
+                {performances.map((perf) => (
+                  <div
+                    key={perf.name}
+                    className="flex h-[156px] items-end p-2"
+                    style={{ background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
+                  >
+                    <span className="label text-white mix-blend-difference">{perf.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className="label absolute -top-6 right-0 text-white">
+              {String(active + 1).padStart(2, "0")} / {String(performances.length).padStart(2, "0")}
+            </p>
           </div>
-        )}
+        </div>
+
+        {/* Scrolling text, pulled up over the sticky layer. */}
+        <div className="relative -mt-[100svh]">
+          {performances.map((perf, i) => (
+            <article
+              key={perf.name}
+              className="perf-item flex min-h-svh items-center px-4 text-white md:px-8 lg:pl-48"
+            >
+              <div className="perf-copy grid w-full gap-6 md:grid-cols-[1fr_3fr]">
+                <p className="label text-white/70">
+                  {String(i + 1).padStart(2, "0")} — {perf.region[lang]}
+                </p>
+                <div>
+                  <h3 className="display text-[16vw] md:text-[9vw]">{perf.name}</h3>
+                  <p className="mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
+  );
+}
+
+function Brackets() {
+  const corner = "absolute h-3 w-3 border-white";
+  return (
+    <>
+      <span className={`${corner} left-0 top-0 border-l border-t`} />
+      <span className={`${corner} right-0 top-0 border-r border-t`} />
+      <span className={`${corner} bottom-0 left-0 border-b border-l`} />
+      <span className={`${corner} bottom-0 right-0 border-b border-r`} />
+    </>
   );
 }

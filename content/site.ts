@@ -29,7 +29,13 @@ export const group = {
 
 export const ui: Record<Lang, Record<string, string>> = {
   es: {
+    navHome: "Inicio",
     navAbout: "Historia",
+    heroSpin: "Gira la pollera",
+    aboutHeadline1: "Treinta años",
+    aboutHeadline2: "llevando Colombia",
+    aboutHeadline3: "al mundo",
+    performancesIntro: "Seis danzas, seis regiones, un solo país.",
     navPerformances: "Presentaciones",
     navTours: "Giras",
     navContact: "Contacto",
@@ -56,7 +62,13 @@ export const ui: Record<Lang, Record<string, string>> = {
     footerRights: "Todos los derechos reservados.",
   },
   en: {
+    navHome: "Home",
     navAbout: "History",
+    heroSpin: "Spin the skirt",
+    aboutHeadline1: "Thirty years",
+    aboutHeadline2: "taking Colombia",
+    aboutHeadline3: "to the world",
+    performancesIntro: "Six dances, six regions, one country.",
     navPerformances: "Performances",
     navTours: "Tours",
     navContact: "Contact",
@@ -85,6 +97,30 @@ export const ui: Record<Lang, Record<string, string>> = {
 };
 
 export const stats = { years: 30, countries: 12, shows: 500 };
+
+// Sections listed in the side navigation, in page order.
+export const sections = [
+  { id: "top", labelKey: "navHome" },
+  { id: "historia", labelKey: "navAbout" },
+  { id: "presentaciones", labelKey: "navPerformances" },
+  { id: "giras", labelKey: "navTours" },
+  { id: "contacto", labelKey: "navContact" },
+] as const;
+
+// Hero scroll sequence. Export a performance video to numbered frames
+// (e.g. `ffmpeg -i spin.mp4 -vf fps=30 public/sequence/%04d.webp`) and list
+// them here; while it is empty, the hero draws an animated pollera instead.
+export const heroSequence: string[] = [];
+
+// Placeholder "photos" that fly past the history headline. Swap for real images.
+export const flyingImages: { palette: [string, string] }[] = [
+  { palette: ["#FCD116", "#CE1126"] },
+  { palette: ["#003893", "#7FC8D8"] },
+  { palette: ["#2E7D5B", "#F4E3B2"] },
+  { palette: ["#E2733B", "#5A1E0E"] },
+  { palette: ["#CE1126", "#F7D6E0"] },
+  { palette: ["#B5651D", "#FCD116"] },
+];
 
 export const performances: Performance[] = [
   {

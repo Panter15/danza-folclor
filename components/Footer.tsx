@@ -18,7 +18,7 @@ export function Footer() {
 
   return (
     <footer className="overflow-hidden bg-ink px-4 pt-16 pb-6 text-paper md:px-8">
-      <div className="flex flex-wrap justify-between gap-4 text-xs uppercase tracking-[0.3em] text-paper/60">
+      <div className="label flex flex-wrap justify-between gap-4 text-paper/60">
         <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-paper">
           Instagram
         </a>
@@ -26,8 +26,8 @@ export function Footer() {
           ©{year ? ` ${year}` : ""} {group.name}. {t("footerRights")}
         </span>
       </div>
-      {/* Oversized name, inspired by the Victor Córdon footer. */}
-      <p className="mt-10 font-display text-[10vw] leading-none tracking-tight" aria-hidden="true">
+      {/* Oversized name, inspired by the Victor Córdon and Cntrl footers. */}
+      <p className="display mt-10 text-[11vw]" aria-hidden="true">
         {group.name}
       </p>
     </footer>
