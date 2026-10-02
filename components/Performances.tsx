@@ -104,9 +104,10 @@ export function Performances() {
           </nav>
         </div>
 
-        {/* Scrolling text, pulled up over the sticky layer. It has nothing to click,
-            so clicks pass through to the thumbnail rail underneath. */}
-        <div className="pointer-events-none relative -mt-[100svh]">
+        {/* Scrolling text, pulled up over the sticky layer. On desktop the empty
+            space lets clicks through to the thumbnail rail underneath, while the
+            name and description stay selectable. Mobile has no rail, so nothing changes. */}
+        <div className="relative -mt-[100svh] md:pointer-events-none">
           {performances.map((perf, i) => (
             <article
               key={perf.name}
@@ -118,8 +119,8 @@ export function Performances() {
                   {String(i + 1).padStart(2, "0")} — {perf.region[lang]}
                 </p>
                 <div>
-                  <h3 className="display text-[16vw] md:text-[9vw]">{perf.name}</h3>
-                  <p className="mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
+                  <h3 className="display pointer-events-auto w-fit text-[16vw] md:text-[9vw]">{perf.name}</h3>
+                  <p className="pointer-events-auto mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
                 </div>
               </div>
             </article>

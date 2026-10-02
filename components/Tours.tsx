@@ -29,9 +29,13 @@ export function Tours() {
             pin: true,
             scrub: 1,
             invalidateOnRefresh: true,
-            onUpdate: (self) => gsap.set(bar.current, { scaleX: self.progress }),
           },
         });
+
+        // Follow the cards' own (smoothed) progress, not the raw scroll, so the bar
+        // and the cards finish together. Attached after creation because GSAP runs
+        // onUpdate once while the tween is being built, before `slide` exists.
+        slide.eventCallback("onUpdate", () => gsap.set(bar.current, { scaleX: slide.progress() }));
 
         // Each card's "photo" drifts slightly as it crosses the screen (parallax inside the card).
         gsap.utils.toArray<HTMLElement>(".tour-media").forEach((media) => {
