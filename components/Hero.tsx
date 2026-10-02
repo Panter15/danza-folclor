@@ -83,7 +83,8 @@ export function Hero() {
       const render = () => {
         if (frames.length) {
           const img = frames[Math.min(frames.length - 1, Math.round(state.p * (frames.length - 1)))];
-          if (img.complete) {
+          // A frame that failed to load is also "complete" but has no size; skip it.
+          if (img.complete && img.naturalWidth > 0) {
             ctx.clearRect(0, 0, el.width, el.height);
             const scale = Math.max(el.width / img.width, el.height / img.height);
             const iw = img.width * scale;
@@ -106,7 +107,9 @@ export function Hero() {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         // Scroll scrubs the sequence while the hero stays pinned (sticky container).
-        gsap.to(state, {
+        // fromTo (not to) so the scrub always starts closed, even after the
+        // reduced-motion branch below has set p = 1.
+        gsap.fromTo(state, { p: 0 }, {
           p: 1,
           ease: "none",
           onUpdate: render,
@@ -134,6 +137,10 @@ export function Hero() {
       mm.add("(prefers-reduced-motion: reduce)", () => {
         state.p = 1;
         render();
+        // Undo when the preference changes back, so the scrub starts from closed.
+        return () => {
+          state.p = 0;
+        };
       });
 
       return () => window.removeEventListener("resize", onResize);

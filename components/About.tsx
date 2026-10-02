@@ -29,7 +29,14 @@ export function About() {
         // Each photo rises from below the screen to above it while the headline
         // stays pinned. Different speeds and start offsets give depth.
         const flight = gsap.timeline({
-          scrollTrigger: { trigger: ".fly-stage", start: "top top", end: "bottom bottom", scrub: 0.8 },
+          scrollTrigger: {
+            trigger: ".fly-stage",
+            start: "top top",
+            end: "bottom bottom",
+            scrub: 0.8,
+            // Recalculate the window-height-based distances on resize / rotation.
+            invalidateOnRefresh: true,
+          },
         });
         gsap.utils.toArray<HTMLElement>(".fly-photo").forEach((photo, i) => {
           const { speed } = FLIGHT[i % FLIGHT.length];
