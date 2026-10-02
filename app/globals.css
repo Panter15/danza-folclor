@@ -38,6 +38,26 @@ body {
   text-transform: uppercase;
 }
 
+/* Visible keyboard focus on every interactive element (a signifier for keyboard users). */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+/* Hero scroll cue: the dot travels down the line, then starts again. */
+.scroll-cue-dot {
+  animation: scroll-cue 1.8s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes scroll-cue {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(51px); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue-dot { animation: none; }
+}
+
 /* Lenis smooth scrolling (recommended base styles). */
 html.lenis,
 html.lenis body {

@@ -21,7 +21,7 @@ export type Tour = {
 };
 
 export const group = {
-  name: "Nombre del Grupo",
+  name: "Fundación Ancestros ONG",
   foundedYear: "19XX",
   whatsappNumber: "570000000000", // country code + number, digits only
   instagram: "https://instagram.com/",
@@ -31,7 +31,6 @@ export const ui: Record<Lang, Record<string, string>> = {
   es: {
     navHome: "Inicio",
     navAbout: "Historia",
-    heroSpin: "Gira la pollera",
     aboutHeadline1: "Treinta años",
     aboutHeadline2: "llevando Colombia",
     aboutHeadline3: "al mundo",
@@ -43,7 +42,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     heroLine1: "Bailamos",
     heroLine2: "la memoria",
     heroLine3: "de Colombia",
-    scroll: "Desliza para explorar",
     aboutTitle: "Nuestra historia",
     aboutBody:
       "Desde nuestra fundación llevamos los ritmos del Caribe, los Andes, los Llanos y el Pacífico a escenarios de Colombia y del mundo. Cada presentación es un viaje por la identidad, el color y la alegría de nuestro país.",
@@ -51,9 +49,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     statCountries: "países visitados",
     statShows: "presentaciones",
     performancesTitle: "Presentaciones",
-    performancesHint: "Pasa el cursor sobre cada danza",
     toursTitle: "Giras",
-    toursHint: "Nuestro recorrido por el mundo",
+    toursSubtitle: "Nuestro recorrido por el mundo",
     contactTitle: "¿Bailamos juntos?",
     contactBody:
       "Festivales, eventos culturales, colaboraciones o contrataciones: escríbenos y conversemos.",
@@ -64,7 +61,6 @@ export const ui: Record<Lang, Record<string, string>> = {
   en: {
     navHome: "Home",
     navAbout: "History",
-    heroSpin: "Spin the skirt",
     aboutHeadline1: "Thirty years",
     aboutHeadline2: "taking Colombia",
     aboutHeadline3: "to the world",
@@ -76,7 +72,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     heroLine1: "We dance",
     heroLine2: "the memory",
     heroLine3: "of Colombia",
-    scroll: "Scroll to explore",
     aboutTitle: "Our story",
     aboutBody:
       "Since our founding we have carried the rhythms of the Caribbean, the Andes, the Plains and the Pacific to stages across Colombia and around the world. Every performance is a journey through the identity, colour and joy of our country.",
@@ -84,9 +79,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     statCountries: "countries visited",
     statShows: "performances",
     performancesTitle: "Performances",
-    performancesHint: "Hover over each dance",
     toursTitle: "Tours",
-    toursHint: "Our journey around the world",
+    toursSubtitle: "Our journey around the world",
     contactTitle: "Shall we dance together?",
     contactBody:
       "Festivals, cultural events, collaborations or bookings: write to us and let's talk.",
