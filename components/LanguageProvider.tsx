@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { ui, type Lang } from "@/content/site";
+import { ScrollTrigger } from "@/lib/gsap";
 
 type LanguageContextValue = {
   lang: Lang;
@@ -16,6 +17,10 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = lang;
+    // Text length differs between languages, so section heights change.
+    // Recalculate every ScrollTrigger's start/end once the new layout is painted.
+    const frame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    return () => cancelAnimationFrame(frame);
   }, [lang]);
 
   const t = (key: string) => ui[lang][key] ?? key;

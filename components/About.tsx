@@ -9,6 +9,7 @@ export function About() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
 
+  // The word reveal is rebuilt on language change because the word spans change.
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -25,7 +26,17 @@ export function About() {
             scrollTrigger: { trigger: ".about-body", start: "top 80%", end: "bottom 45%", scrub: true },
           },
         );
+      });
+    },
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
+  );
 
+  // The counters run once and are not rebuilt on language change (numbers don't change).
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
         // Numbers count up when the stats row enters the screen.
         gsap.utils.toArray<HTMLElement>(".stat-number").forEach((el) => {
           const target = Number(el.dataset.value);
@@ -42,7 +53,7 @@ export function About() {
         });
       });
     },
-    { scope: root, dependencies: [lang], revertOnUpdate: true },
+    { scope: root },
   );
 
   const items = [

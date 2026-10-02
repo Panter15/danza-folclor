@@ -1,10 +1,20 @@
 "use client";
 
+import { useSyncExternalStore } from "react";
 import { group } from "@/content/site";
 import { useLanguage } from "./LanguageProvider";
 
+const noopSubscribe = () => () => {};
+
 export function Footer() {
   const { t } = useLanguage();
+  // The page is pre-rendered at build time, so read the year in the browser
+  // to avoid showing (and mismatching on) the build year.
+  const year = useSyncExternalStore(
+    noopSubscribe,
+    () => new Date().getFullYear(),
+    () => null,
+  );
 
   return (
     <footer className="overflow-hidden bg-ink px-4 pt-16 pb-6 text-paper md:px-8">
@@ -13,7 +23,7 @@ export function Footer() {
           Instagram
         </a>
         <span>
-          © {new Date().getFullYear()} {group.name}. {t("footerRights")}
+          ©{year ? ` ${year}` : ""} {group.name}. {t("footerRights")}
         </span>
       </div>
       {/* Oversized name, inspired by the Victor Córdon footer. */}

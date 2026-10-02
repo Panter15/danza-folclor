@@ -62,6 +62,8 @@ export function Tours() {
           <p className="text-xs uppercase tracking-[0.3em] text-ink/50">{t("toursHint")} →</p>
         </div>
 
+        {/* With reduced motion there is no pinned scroll, so let people swipe the cards sideways instead. */}
+        <div className="motion-reduce:overflow-x-auto">
         <div ref={track} className="flex w-max gap-6 px-4 md:gap-10 md:px-8">
           {tours.map((tour, i) => (
             <article key={`${tour.city}-${i}`} className="w-[78vw] shrink-0 sm:w-[50vw] lg:w-[34vw]">
@@ -83,6 +85,7 @@ export function Tours() {
               <p className="mt-3 text-sm text-ink/70">{tour.event[lang]}</p>
             </article>
           ))}
+        </div>
         </div>
       </div>
     </section>
