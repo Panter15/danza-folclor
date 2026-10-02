@@ -30,19 +30,24 @@ export function Contact() {
   );
 
   return (
-    <section ref={root} id="contacto" className="bg-accent px-4 py-28 text-ink md:px-8 md:py-40">
-      <h2 className="contact-reveal max-w-4xl font-display text-6xl leading-[0.95] md:text-8xl">
-        {t("contactTitle")}
-      </h2>
-      <p className="contact-reveal mt-8 max-w-xl text-lg md:text-xl">{t("contactBody")}</p>
+    <section
+      ref={root}
+      id="contacto"
+      className="border-t border-line bg-paper px-4 py-28 text-ink md:px-8 md:py-40 lg:pl-48"
+    >
+      <p className="contact-reveal label mb-6 text-mute">{t("navContact")}</p>
+      <h2 className="contact-reveal display max-w-5xl text-[13vw] md:text-[8vw]">{t("contactTitle")}</h2>
+      <p className="contact-reveal mt-8 max-w-xl text-lg text-mute md:text-2xl" style={{ letterSpacing: "-0.02em" }}>
+        {t("contactBody")}
+      </p>
       <a
         href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="contact-reveal group mt-12 inline-flex items-center gap-4 rounded-full bg-ink px-8 py-5 text-paper transition-transform hover:scale-105"
+        className="contact-reveal group mt-12 inline-flex items-center gap-3 bg-accent px-5 py-3 text-ink transition-colors hover:bg-ink hover:text-paper"
       >
         <WhatsAppIcon />
-        <span className="text-sm uppercase tracking-[0.2em]">{t("contactCta")}</span>
+        <span className="label">{t("contactCta")}</span>
         <span className="transition-transform group-hover:translate-x-1">→</span>
       </a>
     </section>
