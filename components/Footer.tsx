@@ -19,7 +19,7 @@ export function Footer() {
   return (
     <footer className="overflow-hidden bg-ink px-4 pt-16 pb-6 text-paper md:px-8">
       <div className="label flex flex-wrap justify-between gap-4 text-paper/60">
-        <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="hover:text-paper">
+        <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-paper hover:underline">
           Instagram
         </a>
         <span>

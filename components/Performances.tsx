@@ -5,8 +5,6 @@ import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { performances } from "@/content/site";
 import { useLanguage } from "./LanguageProvider";
 
-const THUMB_HEIGHT = 156; // px, matches h-[156px] on each thumbnail
-
 /**
  * Art of Documentary "slide-over": a blurred full-screen photo sits behind the
  * text and cross-fades as each dance scrolls past. A small sharp thumbnail strip,
@@ -71,39 +69,49 @@ export function Performances() {
           ))}
           <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
 
-          {/* Thumbnail strip: the framed one is the current dance. */}
-          <div
-            className="absolute bottom-8 right-8 hidden h-[168px] w-[128px] md:block"
-            aria-hidden="true"
+          {/* Thumbnail rail. Signifiers: the current dance is framed and solid,
+              the others are dimmed; hover lifts them, so they read as clickable.
+              Each one is a link that jumps to its dance. */}
+          <nav
+            aria-label={t("navPerformances")}
+            className="absolute bottom-8 right-8 hidden flex-col items-end gap-2 md:flex"
           >
-            <Brackets />
-            <div className="absolute inset-[6px] overflow-hidden">
-              <div
-                className="transition-transform duration-700 ease-out"
-                style={{ transform: `translateY(${-active * THUMB_HEIGHT}px)` }}
-              >
-                {performances.map((perf) => (
-                  <div
-                    key={perf.name}
-                    className="flex h-[156px] items-end p-2"
-                    style={{ background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
-                  >
-                    <span className="label text-white mix-blend-difference">{perf.name}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <p className="label absolute -top-6 right-0 text-white">
+            <p className="label mb-1 text-white" aria-hidden="true">
               {String(active + 1).padStart(2, "0")} / {String(performances.length).padStart(2, "0")}
             </p>
-          </div>
+            {performances.map((perf, i) => {
+              const current = i === active;
+              return (
+                <a
+                  key={perf.name}
+                  href={`#danza-${i + 1}`}
+                  aria-label={perf.name}
+                  aria-current={current ? "true" : undefined}
+                  className="group relative block p-[5px]"
+                >
+                  {current && <Brackets />}
+                  <span
+                    className={`block transition-all duration-500 ${
+                      current
+                        ? "h-[84px] w-[64px] opacity-100"
+                        : "h-[28px] w-[40px] opacity-40 group-hover:opacity-90 group-hover:w-[48px]"
+                    }`}
+                    style={{ background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
+                  />
+                </a>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Scrolling text, pulled up over the sticky layer. */}
-        <div className="relative -mt-[100svh]">
+        {/* Scrolling text, pulled up over the sticky layer. On desktop the empty
+            space lets clicks through to the thumbnail rail underneath, while the
+            name and description stay selectable. Mobile has no rail, so nothing changes. */}
+        <div className="relative -mt-[100svh] md:pointer-events-none">
           {performances.map((perf, i) => (
             <article
               key={perf.name}
+              id={`danza-${i + 1}`}
               className="perf-item flex min-h-svh items-center px-4 text-white md:px-8 lg:pl-48"
             >
               <div className="perf-copy grid w-full gap-6 md:grid-cols-[1fr_3fr]">
@@ -111,8 +119,8 @@ export function Performances() {
                   {String(i + 1).padStart(2, "0")} — {perf.region[lang]}
                 </p>
                 <div>
-                  <h3 className="display text-[16vw] md:text-[9vw]">{perf.name}</h3>
-                  <p className="mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
+                  <h3 className="display pointer-events-auto w-fit text-[16vw] md:text-[9vw]">{perf.name}</h3>
+                  <p className="pointer-events-auto mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
                 </div>
               </div>
             </article>
