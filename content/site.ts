@@ -21,7 +21,7 @@ export type Tour = {
 };
 
 export const group = {
-  name: "Fundación Ancestros ONG",
+  name: "Fundacion Ancestros ONG",
   foundedYear: "19XX",
   whatsappNumber: "570000000000", // country code + number, digits only
   instagram: "https://instagram.com/",
