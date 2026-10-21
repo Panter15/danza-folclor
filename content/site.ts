@@ -1,5 +1,5 @@
 // All site content lives here, shaped like the documents Sanity will hold later.
-// Facts come from the group's CV (hv ancestros.pdf). WhatsApp number and Instagram are still placeholders.
+// Facts come from the group's CV (hv ancestros.pdf). Contact details given by the student on 2026-10-21.
 
 export type Lang = "es" | "en";
 export type Localized = Record<Lang, string>;
@@ -25,8 +25,9 @@ export type Tour = {
 export const group = {
   name: "Fundacion Ancestros ONG",
   foundedYear: "2014",
-  whatsappNumber: "570000000000", // country code + number, digits only
-  instagram: "https://instagram.com/",
+  whatsappNumber: "573045396858", // +57 304 5396858: country code + number, digits only
+  instagram: "https://www.instagram.com/fundacion_ancestros/",
+  facebook: "https://www.facebook.com/share/1BA8FsTCdG/",
 };
 
 export const ui: Record<Lang, Record<string, string>> = {

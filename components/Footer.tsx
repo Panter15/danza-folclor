@@ -26,6 +26,9 @@ export function Footer() {
         <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-paper hover:underline">
           Instagram
         </a>
+        <a href={group.facebook} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-paper hover:underline">
+          Facebook
+        </a>
       </div>
       {/* Oversized name, inspired by the Victor Córdon and Cntrl footers. */}
       <p className="display mt-10 text-[11vw]" aria-hidden="true">
