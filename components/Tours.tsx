@@ -67,7 +67,7 @@ export function Tours() {
         <div className="mb-10 flex items-end justify-between gap-4 px-4 md:px-8 lg:pl-48">
           <h2 className="display text-[12vw] md:text-[6vw]">
             {t("toursTitle")}{" "}
-            <span className="font-serif text-[0.45em] font-normal tracking-normal text-mute">{t("toursSubtitle")}</span>
+            <span className="text-[0.45em] font-normal tracking-normal text-mute">{t("toursSubtitle")}</span>
           </h2>
         </div>
 

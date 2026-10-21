@@ -156,11 +156,10 @@ export function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
 
         <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48">
-          <p className="label mb-4 text-white">{t("heroKicker")}</p>
           <h1 className="display text-[14vw] text-white md:text-[8vw]">
             {lines.map((line, i) => (
               <span key={i} className="block overflow-hidden pb-[0.08em]">
-                <span className={`hero-line-inner block ${i === 1 ? "font-serif font-normal tracking-normal text-white/75" : ""}`}>
+                <span className="hero-line-inner block">
                   {line}
                 </span>
               </span>

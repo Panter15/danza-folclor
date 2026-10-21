@@ -50,7 +50,7 @@ export function Performances() {
         <p className="label mb-6 text-mute">{t("navPerformances")}</p>
         <h2 className="display max-w-5xl text-[12vw] md:text-[6vw]">
           {t("performancesTitle")}{" "}
-          <span className="font-serif font-normal tracking-normal text-mute">{t("performancesIntro")}</span>
+          <span className="font-normal tracking-normal text-mute">{t("performancesIntro")}</span>
         </h2>
       </header>
 

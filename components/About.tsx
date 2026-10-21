@@ -130,7 +130,7 @@ export function About() {
             <h2 className="display text-[12vw] md:text-[7vw]">
               {headline.map((line, i) => (
                 <span key={i} className="block overflow-hidden pb-[0.08em]">
-                  <span className={`fly-headline-inner block ${i === 1 ? "font-serif font-normal tracking-normal" : ""}`}>
+                  <span className="fly-headline-inner block">
                     {line}
                   </span>
                 </span>
