@@ -61,12 +61,22 @@ export function Performances() {
             <div
               key={perf.name}
               className="absolute inset-0 transition-opacity duration-1000"
-              style={{
-                opacity: i === active ? 1 : 0,
-                background: `${photoLayer(perf.photo)}linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})`,
-              }}
+              style={{ opacity: i === active ? 1 : 0 }}
               aria-hidden="true"
-            />
+            >
+              {/* Blurred copy fills the screen; the sharp photo is shown whole on top,
+                  so portrait photos are not cropped or blown up on wide screens. */}
+              <div
+                className="absolute inset-0 scale-110 blur-2xl"
+                style={{ background: `${photoLayer(perf.photo)}linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
+              />
+              {perf.photo && (
+                <div
+                  className="absolute inset-0"
+                  style={{ background: photoLayer(perf.photo, "contain").replace(/, $/, "") }}
+                />
+              )}
+            </div>
           ))}
           <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
 
