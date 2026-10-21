@@ -1,5 +1,5 @@
 // All site content lives here, shaped like the documents Sanity will hold later.
-// Facts come from the group's CV (hv ancestros.pdf). WhatsApp number and Instagram are still placeholders.
+// Facts come from the group's CV (hv ancestros.pdf). Contact details given by the student on 2026-10-21.
 
 export type Lang = "es" | "en";
 export type Localized = Record<Lang, string>;
@@ -25,8 +25,9 @@ export type Tour = {
 export const group = {
   name: "Fundacion Ancestros ONG",
   foundedYear: "2014",
-  whatsappNumber: "570000000000", // country code + number, digits only
-  instagram: "https://instagram.com/",
+  whatsappNumber: "573045396858", // +57 304 5396858: country code + number, digits only
+  instagram: "https://www.instagram.com/fundacion_ancestros/",
+  facebook: "https://www.facebook.com/share/1BA8FsTCdG/",
 };
 
 export const ui: Record<Lang, Record<string, string>> = {
@@ -62,6 +63,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     experienceTitle: "Trayectoria y experiencia",
     projectsIntro: "Contratos, proyectos y convenios legalmente soportados que hemos ejecutado:",
     festivalsIntro: "Eventos nacionales e internacionales en los que hemos ocupado lugares honoríficos:",
+    otherYears: "Otros",
+    festivalsTitle: "Festivales",
+    projectsTitle: "Proyectos y convenios",
     performancesTitle: "Nuestro folclor",
     toursTitle: "Giras",
     toursSubtitle: "Festivales donde hemos bailado",
@@ -71,6 +75,12 @@ export const ui: Record<Lang, Record<string, string>> = {
     contactCta: "Escríbenos por WhatsApp",
     whatsappMessage: "Hola, quisiera información sobre una presentación del grupo.",
     footerRights: "Todos los derechos reservados.",
+    loading: "Cargando",
+    viewPhoto: "Ver foto",
+    photoAlt: "Foto de la Fundación Ancestros",
+    close: "Cerrar",
+    prevPhoto: "Foto anterior",
+    nextPhoto: "Foto siguiente",
   },
   en: {
     navHome: "Home",
@@ -104,6 +114,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     experienceTitle: "Track record and experience",
     projectsIntro: "Legally supported contracts, projects and agreements we have carried out:",
     festivalsIntro: "National and international events where we have earned places of honour:",
+    otherYears: "Other",
+    festivalsTitle: "Festivals",
+    projectsTitle: "Projects and agreements",
     performancesTitle: "Our folklore",
     toursTitle: "Tours",
     toursSubtitle: "Festivals we have danced at",
@@ -113,6 +126,12 @@ export const ui: Record<Lang, Record<string, string>> = {
     contactCta: "Message us on WhatsApp",
     whatsappMessage: "Hello, I would like information about booking the group.",
     footerRights: "All rights reserved.",
+    loading: "Loading",
+    viewPhoto: "View photo",
+    photoAlt: "Photo of the Ancestros Foundation",
+    close: "Close",
+    prevPhoto: "Previous photo",
+    nextPhoto: "Next photo",
   },
 };
 
@@ -358,31 +377,58 @@ export const projects: Localized[] = [
 ];
 
 // Festival names are proper nouns, so one list serves both languages (hv ancestros.pdf, page 14).
-export const festivals = [
-  "Festival Nacional de Olleros y Sembradores — Tocancipá, Cundinamarca",
-  "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca · 2023",
-  "Festival Nacional de Danzas — El Copey, Cesar · 2024",
-  "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre · 2024",
-  "Festival Internacional de Danza Ruta Transístmica — Panamá · 2024",
-  "Celebración del Día Internacional de la Danza — Magdalena · 2024",
-  "Festival Nacional Labrando Danza — Tenjo, Cundinamarca · 2023",
-  "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca · 2023",
-  "Fiestas del Mar — Santa Marta · 2022, 2023",
-  "Carnaval de Barranquilla · 2023 – 2024",
-  "Día Nacional de la Cumbia — Santa Marta, Magdalena · 2023",
-  "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza» · 2023",
-  "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
-  "Festival Internacional de Danzas Trietnia · 2023",
-  "Festival Nacional de la Rumba Criolla — Fresno, Tolima",
-  "Festival Nacional de la Cumbia José Benito Barros Palomino · 2022",
-  "Festival de la Cumbia Cienaguera — Ciénaga, Magdalena · 2022",
-  "Feria de la Ganadería — Montería, Córdoba · 2016 – 2017",
-  "Festival Nacional Danzando con el Sol — Anapoima, Cundinamarca · 2016, 2020",
-  "Festival Folclórico Colombiano — Ibagué, Tolima · 2016",
-  "Festival Nacional de la Tambora Tradicional — Gamarra · 2020 – 2021",
-  "Festival Nacional del Porro — San Pelayo, Córdoba · 2016",
-  "Festival Nacional de la Cumbiamba — Cereté, Córdoba · 2016",
-  "Festival Nacional del Porro Pablo Flórez Camargo — Ciénaga de Oro, Córdoba · 2016",
-  "Festival Nacional de la Tambora — Tamalameque, Cesar · 2016",
-  "Festival Golondrina de Plata — Montería, Córdoba · 2016",
+// Grouped by year, newest first. A festival spanning several years sits under its latest
+// one and keeps its range in the name. year: null = the CV gives no year.
+export const festivalsByYear: { year: string | null; items: string[] }[] = [
+  {
+    year: "2024",
+    items: [
+      "Festival Nacional de Danzas — El Copey, Cesar",
+      "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre",
+      "Festival Internacional de Danza Ruta Transístmica — Panamá",
+      "Celebración del Día Internacional de la Danza — Magdalena",
+      "Carnaval de Barranquilla · 2023 – 2024",
+      "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
+    ],
+  },
+  {
+    year: "2023",
+    items: [
+      "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca",
+      "Festival Nacional Labrando Danza — Tenjo, Cundinamarca",
+      "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca",
+      "Fiestas del Mar — Santa Marta · 2022, 2023",
+      "Día Nacional de la Cumbia — Santa Marta, Magdalena",
+      "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza»",
+      "Festival Internacional de Danzas Trietnia",
+    ],
+  },
+  {
+    year: "2022",
+    items: [
+      "Festival Nacional de la Cumbia José Benito Barros Palomino",
+      "Festival de la Cumbia Cienaguera — Ciénaga, Magdalena",
+    ],
+  },
+  { year: "2021", items: ["Festival Nacional de la Tambora Tradicional — Gamarra · 2020 – 2021"] },
+  { year: "2020", items: ["Festival Nacional Danzando con el Sol — Anapoima, Cundinamarca · 2016, 2020"] },
+  { year: "2017", items: ["Feria de la Ganadería — Montería, Córdoba · 2016 – 2017"] },
+  {
+    year: "2016",
+    items: [
+      "Festival Folclórico Colombiano — Ibagué, Tolima",
+      "Festival Nacional del Porro — San Pelayo, Córdoba",
+      "Festival Nacional de la Cumbiamba — Cereté, Córdoba",
+      "Festival Nacional del Porro Pablo Flórez Camargo — Ciénaga de Oro, Córdoba",
+      "Festival Nacional de la Tambora — Tamalameque, Cesar",
+      "Festival Golondrina de Plata — Montería, Córdoba",
+    ],
+  },
+  {
+    year: null,
+    items: [
+      "Festival Nacional de Olleros y Sembradores — Tocancipá, Cundinamarca",
+      "Festival Nacional de la Rumba Criolla — Fresno, Tolima",
+    ],
+  },
 ];
