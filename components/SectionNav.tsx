@@ -31,6 +31,12 @@ export function SectionNav() {
           if (el && el.getBoundingClientRect().top <= middle) current = i;
         });
         setActive(current);
+        // Keep the URL in step with the section on screen, so a copied link or a
+        // reload lands in the same place. replaceState: no jump, no history entry per section.
+        const hash = current === 0 ? "" : `#${sections[current].id}`;
+        if (window.location.hash !== hash) {
+          history.replaceState(null, "", `${window.location.pathname}${window.location.search}${hash}`);
+        }
       },
     });
   });
