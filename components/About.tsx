@@ -7,20 +7,21 @@ import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 // Where each flying photo sits horizontally, how big it is, and how fast it
-// travels (depth). Faster = feels closer to the camera.
+// travels (depth). Faster = feels closer to the camera. Phones get their own
+// big, alternating positions (mLeft/mWidth) so each photo can be seen.
 const FLIGHT = [
-  { left: "6%", width: "22vw", speed: 1.3 },
-  { left: "68%", width: "26vw", speed: 0.9 },
-  { left: "38%", width: "16vw", speed: 1.6 },
-  { left: "80%", width: "14vw", speed: 1.2 },
-  { left: "14%", width: "18vw", speed: 0.8 },
-  { left: "56%", width: "20vw", speed: 1.4 },
-  { left: "28%", width: "15vw", speed: 1.1 },
-  { left: "74%", width: "19vw", speed: 1.5 },
-  { left: "2%", width: "16vw", speed: 1.0 },
-  { left: "46%", width: "22vw", speed: 0.85 },
-  { left: "86%", width: "12vw", speed: 1.7 },
-  { left: "20%", width: "24vw", speed: 1.25 },
+  { left: "6%", width: "22vw", mLeft: "4%", mWidth: "70vw", speed: 1.3 },
+  { left: "68%", width: "26vw", mLeft: "30%", mWidth: "66vw", speed: 0.9 },
+  { left: "38%", width: "16vw", mLeft: "8%", mWidth: "60vw", speed: 1.6 },
+  { left: "80%", width: "14vw", mLeft: "34%", mWidth: "62vw", speed: 1.2 },
+  { left: "14%", width: "18vw", mLeft: "2%", mWidth: "76vw", speed: 0.8 },
+  { left: "56%", width: "20vw", mLeft: "26%", mWidth: "70vw", speed: 1.4 },
+  { left: "28%", width: "15vw", mLeft: "10%", mWidth: "58vw", speed: 1.1 },
+  { left: "74%", width: "19vw", mLeft: "36%", mWidth: "60vw", speed: 1.5 },
+  { left: "2%", width: "16vw", mLeft: "0%", mWidth: "80vw", speed: 1.0 },
+  { left: "46%", width: "22vw", mLeft: "22%", mWidth: "72vw", speed: 0.85 },
+  { left: "86%", width: "12vw", mLeft: "38%", mWidth: "56vw", speed: 1.7 },
+  { left: "20%", width: "24vw", mLeft: "6%", mWidth: "68vw", speed: 1.25 },
 ];
 
 export function About() {
@@ -94,14 +95,22 @@ export function About() {
       {/* Part 1: photos fly past a pinned headline (Art of Documentary). */}
       <div className="fly-stage relative h-[350svh] motion-reduce:h-auto">
         {/* bg-paper matters: the headline blends (difference) against this layer's own background. */}
-        <div className="sticky top-0 h-svh overflow-hidden bg-paper [--fly-scale:2] md:[--fly-scale:1] motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
+        <div className="sticky top-0 h-svh overflow-hidden bg-paper motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
           {flyingImages.map((img, i) => {
             const spot = FLIGHT[i % FLIGHT.length];
             return (
               <div
                 key={i}
-                className="fly-photo absolute top-0 aspect-[3/4] overflow-hidden motion-reduce:hidden"
-                style={{ left: spot.left, width: `calc(${spot.width} * var(--fly-scale))`, transform: "translateY(110vh)" }}
+                className="fly-photo absolute top-0 left-[var(--ml)] w-[var(--mw)] aspect-[3/4] overflow-hidden md:left-[var(--l)] md:w-[var(--w)] motion-reduce:hidden"
+                style={
+                  {
+                    "--l": spot.left,
+                    "--w": spot.width,
+                    "--ml": spot.mLeft,
+                    "--mw": spot.mWidth,
+                    transform: "translateY(110vh)",
+                  } as React.CSSProperties
+                }
                 aria-hidden="true"
               >
                 {/* Inner layer zooms on hover; the outer one is moved by GSAP. */}
