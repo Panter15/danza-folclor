@@ -46,9 +46,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     aboutTitle: "Nuestra historia",
     aboutBody:
       "Desde nuestra fundación llevamos los ritmos del Caribe, los Andes, los Llanos y el Pacífico a escenarios de Colombia y del mundo. Cada presentación es un viaje por la identidad, el color y la alegría de nuestro país.",
-    statYears: "años en escena",
-    statCountries: "países visitados",
-    statShows: "presentaciones",
     performancesTitle: "Presentaciones",
     toursTitle: "Giras",
     toursSubtitle: "Nuestro recorrido por el mundo",
@@ -75,9 +72,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     aboutTitle: "Our story",
     aboutBody:
       "Since our founding we have carried the rhythms of the Caribbean, the Andes, the Plains and the Pacific to stages across Colombia and around the world. Every performance is a journey through the identity, colour and joy of our country.",
-    statYears: "years on stage",
-    statCountries: "countries visited",
-    statShows: "performances",
     performancesTitle: "Performances",
     toursTitle: "Tours",
     toursSubtitle: "Our journey around the world",
@@ -89,8 +83,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     footerRights: "All rights reserved.",
   },
 };
-
-export const stats = { years: 30, countries: 12, shows: 500 };
 
 // Sections listed in the side navigation, in page order.
 export const sections = [

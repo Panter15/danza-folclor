@@ -47,7 +47,6 @@ export function Performances() {
   return (
     <section ref={root} id="presentaciones" className="bg-paper text-ink">
       <header className="px-4 pb-16 pt-28 md:px-8 md:pt-40 lg:pl-48">
-        <p className="label mb-6 text-mute">{t("navPerformances")}</p>
         <h2 className="display max-w-5xl text-[12vw] md:text-[6vw]">
           {t("performancesTitle")}{" "}
           <span className="font-normal tracking-normal text-mute">{t("performancesIntro")}</span>

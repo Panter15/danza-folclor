@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { flyingImages, stats } from "@/content/site";
+import { flyingImages } from "@/content/site";
 import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
@@ -21,7 +21,7 @@ export function About() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
 
-  // Flying photos + counters: built once (they don't depend on the text).
+  // Flying photos: built once (they don't depend on the text).
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -56,20 +56,6 @@ export function About() {
           stagger: 0.1,
           scrollTrigger: { trigger: ".fly-stage", start: "top 60%" },
         });
-
-        // Numbers count up when the stats row enters the screen.
-        gsap.utils.toArray<HTMLElement>(".stat-number").forEach((el) => {
-          const counter = { value: 0 };
-          gsap.to(counter, {
-            value: Number(el.dataset.value),
-            duration: 2,
-            ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 85%", once: true },
-            onUpdate: () => {
-              el.textContent = Math.round(counter.value).toString();
-            },
-          });
-        });
       });
     },
     { scope: root },
@@ -96,11 +82,6 @@ export function About() {
   );
 
   const headline = [t("aboutHeadline1"), t("aboutHeadline2"), t("aboutHeadline3")];
-  const items = [
-    { value: stats.years, label: t("statYears"), suffix: "+" },
-    { value: stats.countries, label: t("statCountries"), suffix: "" },
-    { value: stats.shows, label: t("statShows"), suffix: "+" },
-  ];
 
   return (
     <section ref={root} id="historia" className="bg-paper text-ink">
@@ -153,20 +134,6 @@ export function About() {
                 </span>
               ))}
           </p>
-
-          <dl className="mt-20 grid gap-10 border-t border-line pt-10 sm:grid-cols-3">
-            {items.map((item) => (
-              <div key={item.label}>
-                <dd className="display text-6xl md:text-7xl">
-                  <span className="stat-number" data-value={item.value}>
-                    {item.value}
-                  </span>
-                  {item.suffix}
-                </dd>
-                <dt className="label mt-3 text-mute">{item.label}</dt>
-              </div>
-            ))}
-          </dl>
         </div>
       </div>
     </section>
