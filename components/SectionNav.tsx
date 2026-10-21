@@ -13,23 +13,25 @@ export function SectionNav() {
   const line = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
-    sections.forEach((section, i) => {
-      ScrollTrigger.create({
-        trigger: `#${section.id}`,
-        start: "top center",
-        end: "bottom center",
-        onToggle: (self) => self.isActive && setActive(i),
-        // Compute after pinned sections (Tours) so their extra scroll space is included.
-        refreshPriority: -1,
-      });
-    });
+    const targets = sections.map((section) => document.getElementById(section.id));
 
     ScrollTrigger.create({
       start: 0,
       end: "max",
+      // Compute after pinned sections (Tours) so their extra scroll space is included.
       refreshPriority: -1,
-      // Set the style directly instead of using state, so scrolling does not re-render.
-      onUpdate: (self) => gsap.set(line.current, { scaleY: self.progress }),
+      onUpdate: (self) => {
+        // Set the style directly instead of using state, so scrolling does not re-render.
+        gsap.set(line.current, { scaleY: self.progress });
+        // Current section = the last one whose top has passed the middle of the screen.
+        // Unlike per-section enter/leave, this stays right after jumps and over the footer.
+        const middle = window.innerHeight / 2;
+        let current = 0;
+        targets.forEach((el, i) => {
+          if (el && el.getBoundingClientRect().top <= middle) current = i;
+        });
+        setActive(current);
+      },
     });
   });
 

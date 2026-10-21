@@ -48,8 +48,7 @@ export function Performances() {
     <section ref={root} id="presentaciones" className="bg-paper text-ink">
       <header className="px-4 pb-16 pt-28 md:px-8 md:pt-40 lg:pl-48">
         <h2 className="display max-w-5xl text-[12vw] md:text-[6vw]">
-          {t("performancesTitle")}{" "}
-          <span className="font-normal tracking-normal text-mute">{t("performancesIntro")}</span>
+          {t("performancesTitle")}
         </h2>
         <p className="mt-8 max-w-2xl text-lg leading-relaxed text-mute md:text-xl">{t("folclorBody")}</p>
       </header>

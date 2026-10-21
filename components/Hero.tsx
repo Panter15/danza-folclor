@@ -58,18 +58,25 @@ export function Hero() {
   const { t } = useLanguage();
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const skirt = useRef<HTMLCanvasElement>(null);
 
   useGSAP(
     () => {
       const el = canvas.current;
       const ctx = el?.getContext("2d");
       if (!el || !ctx) return;
+      const skirtEl = skirt.current;
+      const skirtCtx = skirtEl?.getContext("2d");
 
       // Keep the canvas sharp on high-DPI screens.
       const size = () => {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
         el.width = el.clientWidth * dpr;
         el.height = el.clientHeight * dpr;
+        if (skirtEl) {
+          skirtEl.width = skirtEl.clientWidth * dpr;
+          skirtEl.height = skirtEl.clientHeight * dpr;
+        }
       };
 
       // Real frames (Radian-style image sequence) if provided, otherwise the drawn pollera.
@@ -95,6 +102,8 @@ export function Hero() {
         } else {
           drawPollera(ctx, el.width, el.height, state.p);
         }
+        // The pollera also spins open in the corner, over the video.
+        if (skirtEl && skirtCtx) drawPollera(skirtCtx, skirtEl.width, skirtEl.height, state.p);
       };
 
       size();
@@ -152,6 +161,11 @@ export function Hero() {
     <section ref={root} id="top" className="relative h-[300svh] bg-paper motion-reduce:h-svh">
       <div className="sticky top-0 h-svh overflow-hidden">
         <canvas ref={canvas} className="absolute inset-0 h-full w-full" aria-hidden="true" />
+        <canvas
+          ref={skirt}
+          className="absolute right-[4%] top-[12%] aspect-square w-[40vw] md:w-[24vw]"
+          aria-hidden="true"
+        />
         {/* Video frames are busy and dark at the bottom; shade them so the headline stays readable. */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
 
