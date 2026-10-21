@@ -1,16 +1,11 @@
 "use client";
 
-import { useState } from "react";
 import { festivalsByYear, projects } from "@/content/site";
 import { useLanguage } from "./LanguageProvider";
-
-// Projects visible before "Ver todos".
-const PROJECTS_SHOWN = 5;
 
 // "Trayectoria y experiencia" from the group's CV: festivals by year, projects carried out.
 export function Experience() {
   const { lang, t } = useLanguage();
-  const [showAll, setShowAll] = useState(false);
 
   const projectItem = (item: (typeof projects)[number]) => (
     <li key={item.es} className="py-3 text-base text-ink/80 md:text-lg">
@@ -49,19 +44,8 @@ export function Experience() {
           <h3 className="display text-3xl md:text-4xl">{t("projectsTitle")}</h3>
           <p className="label mt-3 text-accent">{t("projectsIntro")}</p>
           <ul className="mt-6 divide-y divide-line border-t border-line">
-            {(showAll ? projects : projects.slice(0, PROJECTS_SHOWN)).map(projectItem)}
+            {projects.map(projectItem)}
           </ul>
-          <button
-            type="button"
-            onClick={() => setShowAll(!showAll)}
-            aria-expanded={showAll}
-            className="label mt-6 inline-flex items-center gap-2 border border-ink px-4 py-2 transition-colors hover:bg-ink hover:text-paper"
-          >
-            {showAll ? t("showLess") : `${t("showAll")} (${projects.length})`}
-            <span aria-hidden="true" className={`transition-transform ${showAll ? "rotate-180" : ""}`}>
-              ↓
-            </span>
-          </button>
         </div>
       </div>
     </section>

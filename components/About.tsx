@@ -206,8 +206,15 @@ export function About() {
         className="h-svh max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-black/95 backdrop:backdrop-blur-md"
         data-lenis-prevent
       >
+        {/* Same fill as Nuestro folclor: a blurred, darkened copy of the open photo. */}
+        {viewing !== null && (
+          <div key={viewing} className="pointer-events-none fixed inset-0 overflow-hidden motion-safe:animate-[fade-in_300ms_ease-out]" aria-hidden="true">
+            <div className="absolute inset-0 scale-110 blur-2xl" style={{ background: photoLayer(gallery[viewing]).replace(/, $/, "") }} />
+            <div className="absolute inset-0 bg-black/45" />
+          </div>
+        )}
         <div
-          className="flex h-full w-full items-center justify-center p-4 md:p-16"
+          className="relative flex h-full w-full items-center justify-center p-4 md:p-16"
           onClick={(e) => e.target === e.currentTarget && setViewing(null)}
         >
           {viewing !== null && (
