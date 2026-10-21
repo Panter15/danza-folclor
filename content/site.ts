@@ -71,6 +71,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     contactCta: "Escríbenos por WhatsApp",
     whatsappMessage: "Hola, quisiera información sobre una presentación del grupo.",
     footerRights: "Todos los derechos reservados.",
+    loading: "Cargando",
   },
   en: {
     navHome: "Home",
@@ -113,6 +114,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     contactCta: "Message us on WhatsApp",
     whatsappMessage: "Hello, I would like information about booking the group.",
     footerRights: "All rights reserved.",
+    loading: "Loading",
   },
 };
 

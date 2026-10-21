@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { heroSequence } from "@/content/site";
+import { group, heroSequence } from "@/content/site";
 import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
@@ -59,6 +59,9 @@ export function Hero() {
   const root = useRef<HTMLElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
   const skirt = useRef<HTMLCanvasElement>(null);
+  const loader = useRef<HTMLDivElement>(null);
+  const loaderBar = useRef<HTMLDivElement>(null);
+  const loaderPct = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -80,9 +83,27 @@ export function Hero() {
       };
 
       // Real frames (Radian-style image sequence) if provided, otherwise the drawn pollera.
+      // Loading screen: fill the bar as frames arrive, fade it out once all are in.
+      // Failed frames count too, so a missing file never leaves the screen stuck.
+      let settled = 0;
+      const onSettled = () => {
+        settled += 1;
+        const share = settled / heroSequence.length;
+        gsap.to(loaderBar.current, { scaleX: share, duration: 0.3, ease: "power2.out" });
+        if (loaderPct.current) loaderPct.current.textContent = `${Math.round(share * 100)}%`;
+        if (settled === heroSequence.length) {
+          gsap.to(loader.current, { autoAlpha: 0, duration: 0.6, delay: 0.3 });
+        }
+      };
+      if (!heroSequence.length) gsap.set(loader.current, { autoAlpha: 0 });
+
       const frames = heroSequence.map((src) => {
         const img = new Image();
-        img.onload = () => render();
+        img.onload = () => {
+          render();
+          onSettled();
+        };
+        img.onerror = onSettled;
         img.src = withBase(src);
         return img;
       });
@@ -94,6 +115,8 @@ export function Hero() {
           // A frame that failed to load is also "complete" but has no size; skip it.
           if (img.complete && img.naturalWidth > 0) {
             ctx.clearRect(0, 0, el.width, el.height);
+            // The source video is only 480p; smooth scaling hides the blockiness a little.
+            ctx.imageSmoothingQuality = "high";
             const scale = Math.max(el.width / img.width, el.height / img.height);
             const iw = img.width * scale;
             const ih = img.height * scale;
@@ -159,6 +182,20 @@ export function Hero() {
 
   return (
     <section ref={root} id="top" className="relative h-[300svh] bg-paper motion-reduce:h-svh">
+      <div
+        ref={loader}
+        className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-paper text-ink"
+        role="status"
+        aria-live="polite"
+      >
+        <p className="display text-3xl md:text-5xl">{group.name}</p>
+        <div className="h-px w-56 bg-line md:w-80" aria-hidden="true">
+          <div ref={loaderBar} className="h-full origin-left bg-accent" style={{ transform: "scaleX(0)" }} />
+        </div>
+        <p className="label text-mute">
+          {t("loading")} <span ref={loaderPct}>0%</span>
+        </p>
+      </div>
       <div className="sticky top-0 h-svh overflow-hidden">
         <canvas ref={canvas} className="absolute inset-0 h-full w-full" aria-hidden="true" />
         <canvas

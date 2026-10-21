@@ -94,14 +94,14 @@ export function About() {
       {/* Part 1: photos fly past a pinned headline (Art of Documentary). */}
       <div className="fly-stage relative h-[350svh] motion-reduce:h-auto">
         {/* bg-paper matters: the headline blends (difference) against this layer's own background. */}
-        <div className="sticky top-0 h-svh overflow-hidden bg-paper motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
+        <div className="sticky top-0 h-svh overflow-hidden bg-paper [--fly-scale:2] md:[--fly-scale:1] motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
           {flyingImages.map((img, i) => {
             const spot = FLIGHT[i % FLIGHT.length];
             return (
               <div
                 key={i}
                 className="fly-photo absolute top-0 aspect-[3/4] overflow-hidden motion-reduce:hidden"
-                style={{ left: spot.left, width: spot.width, transform: "translateY(110vh)" }}
+                style={{ left: spot.left, width: `calc(${spot.width} * var(--fly-scale))`, transform: "translateY(110vh)" }}
                 aria-hidden="true"
               >
                 {/* Inner layer zooms on hover; the outer one is moved by GSAP. */}
