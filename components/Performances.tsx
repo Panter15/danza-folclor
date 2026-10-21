@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { performances } from "@/content/site";
+import { otherDances, performances } from "@/content/site";
 import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
@@ -51,6 +51,7 @@ export function Performances() {
           {t("performancesTitle")}{" "}
           <span className="font-normal tracking-normal text-mute">{t("performancesIntro")}</span>
         </h2>
+        <p className="mt-8 max-w-2xl text-lg leading-relaxed text-mute md:text-xl">{t("folclorBody")}</p>
       </header>
 
       <div className="relative">
@@ -67,7 +68,7 @@ export function Performances() {
               aria-hidden="true"
             />
           ))}
-          <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
+          <div className="absolute inset-0 bg-black/45" aria-hidden="true" />
 
           {/* Thumbnail rail. Signifiers: the current dance is framed and solid,
               the others are dimmed; hover lifts them, so they read as clickable.
@@ -106,7 +107,7 @@ export function Performances() {
 
         {/* Scrolling text, pulled up over the sticky layer. On desktop the empty
             space lets clicks through to the thumbnail rail underneath, while the
-            name stays selectable. Mobile has no rail, so nothing changes. */}
+            name and description stay selectable. Mobile has no rail, so nothing changes. */}
         <div className="relative -mt-[100svh] md:pointer-events-none">
           {performances.map((perf, i) => (
             <article
@@ -116,15 +117,26 @@ export function Performances() {
             >
               <div className="perf-copy grid w-full gap-6 md:grid-cols-[1fr_3fr]">
                 <p className="label text-white/70">
-                  {String(i + 1).padStart(2, "0")} — {perf.region[lang]}
+                  {String(i + 1).padStart(2, "0")}
+                  {perf.region && ` — ${perf.region[lang]}`}
                 </p>
                 <div>
                   <h3 className="display pointer-events-auto w-fit text-[16vw] md:text-[9vw]">{perf.name}</h3>
+                  <p className="pointer-events-auto mt-6 max-w-xl text-lg text-white/90 md:text-xl">{perf.description[lang]}</p>
                 </div>
               </div>
             </article>
           ))}
         </div>
+      </div>
+
+      <div className="px-4 py-20 md:px-8 lg:pl-48">
+        <h3 className="label text-accent">{t("otherDancesTitle")}</h3>
+        <ul className="display mt-6 space-y-2 text-3xl md:text-5xl">
+          {otherDances.map((name) => (
+            <li key={name}>{name}</li>
+          ))}
+        </ul>
       </div>
     </section>
   );

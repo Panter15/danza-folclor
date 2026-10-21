@@ -18,14 +18,14 @@ export function Footer() {
 
   return (
     <footer className="overflow-hidden bg-ink px-4 pt-16 pb-6 text-paper md:px-8">
-      {/* lg:pl-40 keeps the links clear of the fixed side nav, like the other sections. */}
-      <div className="label flex flex-wrap justify-between gap-4 text-paper/60 lg:pl-40">
-        <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-paper hover:underline">
-          Instagram
-        </a>
+      {/* Right-aligned so nothing sits under the fixed side nav. */}
+      <div className="label flex flex-col items-end gap-3 text-right text-paper/60">
         <span>
           ©{year ? ` ${year}` : ""} {group.name}. {t("footerRights")}
         </span>
+        <a href={group.instagram} target="_blank" rel="noopener noreferrer" className="underline-offset-4 hover:text-paper hover:underline">
+          Instagram
+        </a>
       </div>
       {/* Oversized name, inspired by the Victor Córdon and Cntrl footers. */}
       <p className="display mt-10 text-[11vw]" aria-hidden="true">

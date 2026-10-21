@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { flyingImages } from "@/content/site";
+import { flyingImages, values } from "@/content/site";
 import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
@@ -134,6 +134,24 @@ export function About() {
                 </span>
               ))}
           </p>
+
+          {/* Mission, vision, objective and values, as in the group's CV. */}
+          <div className="mt-20 grid gap-12 border-t border-line pt-10 md:grid-cols-2">
+            {(["mission", "vision", "objective"] as const).map((key) => (
+              <div key={key}>
+                <h3 className="label text-accent">{t(`${key}Title`)}</h3>
+                <p className="mt-4 text-lg leading-relaxed text-ink/80">{t(`${key}Body`)}</p>
+              </div>
+            ))}
+            <div>
+              <h3 className="label text-accent">{t("valuesTitle")}</h3>
+              <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-2 text-lg text-ink/80">
+                {values.map((v) => (
+                  <li key={v.es}>{v[lang]}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </section>

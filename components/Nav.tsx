@@ -10,6 +10,7 @@ export function Nav() {
     { href: "#historia", label: t("navAbout") },
     { href: "#presentaciones", label: t("navPerformances") },
     { href: "#giras", label: t("navTours") },
+    { href: "#trayectoria", label: t("navExperience") },
     { href: "#contacto", label: t("navContact") },
   ];
 
