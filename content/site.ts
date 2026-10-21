@@ -63,6 +63,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     experienceTitle: "Trayectoria y experiencia",
     projectsIntro: "Contratos, proyectos y convenios legalmente soportados que hemos ejecutado:",
     festivalsIntro: "Eventos nacionales e internacionales en los que hemos ocupado lugares honoríficos:",
+    otherYears: "Otros",
+    showAll: "Ver todos",
+    showLess: "Ver menos",
     performancesTitle: "Nuestro folclor",
     toursTitle: "Giras",
     toursSubtitle: "Festivales donde hemos bailado",
@@ -106,6 +109,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     experienceTitle: "Track record and experience",
     projectsIntro: "Legally supported contracts, projects and agreements we have carried out:",
     festivalsIntro: "National and international events where we have earned places of honour:",
+    otherYears: "Other",
+    showAll: "Show all",
+    showLess: "Show less",
     performancesTitle: "Our folklore",
     toursTitle: "Tours",
     toursSubtitle: "Festivals we have danced at",
@@ -361,31 +367,58 @@ export const projects: Localized[] = [
 ];
 
 // Festival names are proper nouns, so one list serves both languages (hv ancestros.pdf, page 14).
-export const festivals = [
-  "Festival Nacional de Olleros y Sembradores — Tocancipá, Cundinamarca",
-  "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca · 2023",
-  "Festival Nacional de Danzas — El Copey, Cesar · 2024",
-  "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre · 2024",
-  "Festival Internacional de Danza Ruta Transístmica — Panamá · 2024",
-  "Celebración del Día Internacional de la Danza — Magdalena · 2024",
-  "Festival Nacional Labrando Danza — Tenjo, Cundinamarca · 2023",
-  "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca · 2023",
-  "Fiestas del Mar — Santa Marta · 2022, 2023",
-  "Carnaval de Barranquilla · 2023 – 2024",
-  "Día Nacional de la Cumbia — Santa Marta, Magdalena · 2023",
-  "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza» · 2023",
-  "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
-  "Festival Internacional de Danzas Trietnia · 2023",
-  "Festival Nacional de la Rumba Criolla — Fresno, Tolima",
-  "Festival Nacional de la Cumbia José Benito Barros Palomino · 2022",
-  "Festival de la Cumbia Cienaguera — Ciénaga, Magdalena · 2022",
-  "Feria de la Ganadería — Montería, Córdoba · 2016 – 2017",
-  "Festival Nacional Danzando con el Sol — Anapoima, Cundinamarca · 2016, 2020",
-  "Festival Folclórico Colombiano — Ibagué, Tolima · 2016",
-  "Festival Nacional de la Tambora Tradicional — Gamarra · 2020 – 2021",
-  "Festival Nacional del Porro — San Pelayo, Córdoba · 2016",
-  "Festival Nacional de la Cumbiamba — Cereté, Córdoba · 2016",
-  "Festival Nacional del Porro Pablo Flórez Camargo — Ciénaga de Oro, Córdoba · 2016",
-  "Festival Nacional de la Tambora — Tamalameque, Cesar · 2016",
-  "Festival Golondrina de Plata — Montería, Córdoba · 2016",
+// Grouped by year, newest first. A festival spanning several years sits under its latest
+// one and keeps its range in the name. year: null = the CV gives no year.
+export const festivalsByYear: { year: string | null; items: string[] }[] = [
+  {
+    year: "2024",
+    items: [
+      "Festival Nacional de Danzas — El Copey, Cesar",
+      "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre",
+      "Festival Internacional de Danza Ruta Transístmica — Panamá",
+      "Celebración del Día Internacional de la Danza — Magdalena",
+      "Carnaval de Barranquilla · 2023 – 2024",
+      "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
+    ],
+  },
+  {
+    year: "2023",
+    items: [
+      "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca",
+      "Festival Nacional Labrando Danza — Tenjo, Cundinamarca",
+      "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca",
+      "Fiestas del Mar — Santa Marta · 2022, 2023",
+      "Día Nacional de la Cumbia — Santa Marta, Magdalena",
+      "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza»",
+      "Festival Internacional de Danzas Trietnia",
+    ],
+  },
+  {
+    year: "2022",
+    items: [
+      "Festival Nacional de la Cumbia José Benito Barros Palomino",
+      "Festival de la Cumbia Cienaguera — Ciénaga, Magdalena",
+    ],
+  },
+  { year: "2021", items: ["Festival Nacional de la Tambora Tradicional — Gamarra · 2020 – 2021"] },
+  { year: "2020", items: ["Festival Nacional Danzando con el Sol — Anapoima, Cundinamarca · 2016, 2020"] },
+  { year: "2017", items: ["Feria de la Ganadería — Montería, Córdoba · 2016 – 2017"] },
+  {
+    year: "2016",
+    items: [
+      "Festival Folclórico Colombiano — Ibagué, Tolima",
+      "Festival Nacional del Porro — San Pelayo, Córdoba",
+      "Festival Nacional de la Cumbiamba — Cereté, Córdoba",
+      "Festival Nacional del Porro Pablo Flórez Camargo — Ciénaga de Oro, Córdoba",
+      "Festival Nacional de la Tambora — Tamalameque, Cesar",
+      "Festival Golondrina de Plata — Montería, Córdoba",
+    ],
+  },
+  {
+    year: null,
+    items: [
+      "Festival Nacional de Olleros y Sembradores — Tocancipá, Cundinamarca",
+      "Festival Nacional de la Rumba Criolla — Fresno, Tolima",
+    ],
+  },
 ];
