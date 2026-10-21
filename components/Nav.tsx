@@ -14,7 +14,7 @@ export function Nav() {
   ];
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 mix-blend-difference text-white">
+    <header className="fixed inset-x-0 top-0 z-50 bg-paper/85 text-ink backdrop-blur-md">
       <nav className="flex items-center justify-between px-4 py-4 md:px-8">
         <a href="#top" className="display text-xl">
           {group.name}

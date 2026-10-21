@@ -36,11 +36,11 @@ export function SectionNav() {
   return (
     <nav
       aria-label="Secciones"
-      className="pointer-events-none fixed left-6 top-1/2 z-40 hidden -translate-y-1/2 text-white mix-blend-difference lg:block"
+      className="pointer-events-none fixed left-6 top-1/2 z-40 hidden -translate-y-1/2 bg-paper/85 p-3 text-ink backdrop-blur-md lg:block"
     >
       <div className="flex gap-4">
-        <div className="relative w-px bg-white/25" aria-hidden="true">
-          <div ref={line} className="absolute inset-0 origin-top bg-white" style={{ transform: "scaleY(0)" }} />
+        <div className="relative w-px bg-ink/20" aria-hidden="true">
+          <div ref={line} className="absolute inset-0 origin-top bg-ink" style={{ transform: "scaleY(0)" }} />
         </div>
         <ol className="pointer-events-auto flex flex-col gap-3">
           {sections.map((section, i) => (
@@ -54,7 +54,7 @@ export function SectionNav() {
               >
                 <span>{String(i + 1).padStart(2, "0")}</span>
                 <span
-                  className={`h-px bg-white transition-all duration-500 ${i === active ? "w-6" : "w-0"}`}
+                  className={`h-px bg-ink transition-all duration-500 ${i === active ? "w-6" : "w-0"}`}
                   aria-hidden="true"
                 />
                 <span>{t(section.labelKey)}</span>

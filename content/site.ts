@@ -1,5 +1,5 @@
 // All site content lives here, shaped like the documents Sanity will hold later.
-// Everything below is PLACEHOLDER content — replace with the group's real data.
+// Facts come from the group's CV (hv ancestros.pdf). WhatsApp number and Instagram are still placeholders.
 
 export type Lang = "es" | "en";
 export type Localized = Record<Lang, string>;
@@ -7,7 +7,6 @@ export type Localized = Record<Lang, string>;
 export type Performance = {
   name: string;
   region: Localized;
-  description: Localized;
   // Gradient shown behind the photo while it loads.
   palette: [string, string];
   photo?: string;
@@ -24,7 +23,7 @@ export type Tour = {
 
 export const group = {
   name: "Fundacion Ancestros ONG",
-  foundedYear: "19XX",
+  foundedYear: "2014",
   whatsappNumber: "570000000000", // country code + number, digits only
   instagram: "https://instagram.com/",
 };
@@ -33,10 +32,10 @@ export const ui: Record<Lang, Record<string, string>> = {
   es: {
     navHome: "Inicio",
     navAbout: "Historia",
-    aboutHeadline1: "Treinta años",
-    aboutHeadline2: "llevando Colombia",
-    aboutHeadline3: "al mundo",
-    performancesIntro: "Cuatro danzas, un mismo Caribe.",
+    aboutHeadline1: "Desde 2014",
+    aboutHeadline2: "salvaguardando",
+    aboutHeadline3: "nuestro folclor",
+    performancesIntro: "Algunas danzas de nuestro repertorio.",
     navPerformances: "Presentaciones",
     navTours: "Giras",
     navContact: "Contacto",
@@ -45,10 +44,10 @@ export const ui: Record<Lang, Record<string, string>> = {
     heroLine3: "de Colombia",
     aboutTitle: "Nuestra historia",
     aboutBody:
-      "Desde nuestra fundación llevamos los ritmos del Caribe, los Andes, los Llanos y el Pacífico a escenarios de Colombia y del mundo. Cada presentación es un viaje por la identidad, el color y la alegría de nuestro país.",
+      "Somos una fundación cultural y social sin ánimo de lucro de Ciénaga, Magdalena, creada en 2014. Formamos a niños y jóvenes en la danza, la música y el teatro, y llevamos a escena el folclor tradicional de nuestro territorio para mantener vivos los saberes ancestrales.",
     performancesTitle: "Presentaciones",
     toursTitle: "Giras",
-    toursSubtitle: "Nuestro recorrido por el mundo",
+    toursSubtitle: "Festivales donde hemos bailado",
     contactTitle: "¿Bailamos juntos?",
     contactBody:
       "Festivales, eventos culturales, colaboraciones o contrataciones: escríbenos y conversemos.",
@@ -59,10 +58,10 @@ export const ui: Record<Lang, Record<string, string>> = {
   en: {
     navHome: "Home",
     navAbout: "History",
-    aboutHeadline1: "Thirty years",
-    aboutHeadline2: "taking Colombia",
-    aboutHeadline3: "to the world",
-    performancesIntro: "Four dances, one Caribbean.",
+    aboutHeadline1: "Since 2014",
+    aboutHeadline2: "safeguarding",
+    aboutHeadline3: "our folklore",
+    performancesIntro: "Some dances from our repertoire.",
     navPerformances: "Performances",
     navTours: "Tours",
     navContact: "Contact",
@@ -71,10 +70,10 @@ export const ui: Record<Lang, Record<string, string>> = {
     heroLine3: "of Colombia",
     aboutTitle: "Our story",
     aboutBody:
-      "Since our founding we have carried the rhythms of the Caribbean, the Andes, the Plains and the Pacific to stages across Colombia and around the world. Every performance is a journey through the identity, colour and joy of our country.",
+      "We are a non-profit cultural and social foundation from Ciénaga, Magdalena, founded in 2014. We train children and young people in dance, music and theatre, and bring the traditional folklore of our region to the stage to keep ancestral knowledge alive.",
     performancesTitle: "Performances",
     toursTitle: "Tours",
-    toursSubtitle: "Our journey around the world",
+    toursSubtitle: "Festivals we have danced at",
     contactTitle: "Shall we dance together?",
     contactBody:
       "Festivals, cultural events, collaborations or bookings: write to us and let's talk.",
@@ -114,49 +113,28 @@ export const flyingImages: { palette: [string, string]; photo?: string }[] = [
 export const performances: Performance[] = [
   {
     name: "Cumbia",
-    region: { es: "Región Caribe", en: "Caribbean region" },
-    description: {
-      es: "Velas encendidas y polleras que giran al ritmo del tambor.",
-      en: "Lit candles and swirling skirts to the beat of the drum.",
-    },
+    region: { es: "Caribe colombiano", en: "Colombian Caribbean" },
     palette: ["#F2C230", "#C8102E"],
     photo: "/photos/08.jpeg",
   },
   {
-    name: "Danza del Caimán",
+    name: "Caimán Cienaguero",
     region: { es: "Ciénaga, Magdalena", en: "Ciénaga, Magdalena" },
-    description: {
-      es: "La leyenda del caimán que se llevó a un niño, contada con humor y color.",
-      en: "The legend of the caiman that carried off a child, told with humour and colour.",
-    },
     palette: ["#2E7D5B", "#F2C230"],
     photo: "/photos/09.jpeg",
   },
   {
-    name: "Danza del Pilón",
-    region: { es: "Valledupar, Cesar", en: "Valledupar, Cesar" },
-    description: {
-      es: "El pilón y la batea: el trabajo de pilar el maíz convertido en fiesta.",
-      en: "Pestle and basket: the work of pounding maize turned into a celebration.",
-    },
+    name: "Pilanderas",
+    region: { es: "Región Caribe", en: "Caribbean region" },
     palette: ["#FF4F8B", "#F2C230"],
     photo: "/photos/06.jpeg",
   },
-  {
-    name: "Mapalé",
-    region: { es: "Región Caribe", en: "Caribbean region" },
-    description: {
-      es: "Energía afrocolombiana pura, rápida y explosiva.",
-      en: "Pure Afro-Colombian energy, fast and explosive.",
-    },
-    palette: ["#E2733B", "#5A1E0E"],
-    photo: "/photos/22.jpeg",
-  },
 ];
 
+// From the CV's festival list. Only Barranquilla has a photo known to be from that event.
 export const tours: Tour[] = [
   {
-    year: "20XX",
+    year: "2023 – 2024",
     city: "Barranquilla",
     country: { es: "Colombia", en: "Colombia" },
     event: { es: "Carnaval de Barranquilla", en: "Barranquilla Carnival" },
@@ -164,43 +142,38 @@ export const tours: Tour[] = [
     photo: "/photos/19.jpeg",
   },
   {
-    year: "20XX",
-    city: "Ciudad de México",
-    country: { es: "México", en: "Mexico" },
-    event: { es: "Festival internacional de folclor", en: "International folk festival" },
-    palette: ["#2E7D5B", "#C8102E"],
-    photo: "/photos/21.jpeg",
+    year: "2024",
+    city: "Panamá",
+    country: { es: "Panamá", en: "Panama" },
+    event: { es: "Festival Internacional de Danza Ruta Transístmica", en: "Ruta Transístmica International Dance Festival" },
+    palette: ["#1F3A93", "#C8102E"],
   },
   {
-    year: "20XX",
-    city: "Madrid",
-    country: { es: "España", en: "Spain" },
-    event: { es: "Semana cultural colombiana", en: "Colombian cultural week" },
-    palette: ["#C8102E", "#F2C230"],
-    photo: "/photos/23.jpeg",
+    year: "2015 – 2024",
+    city: "Ciénaga",
+    country: { es: "Magdalena, Colombia", en: "Magdalena, Colombia" },
+    event: { es: "Festival Nacional del Caimán Cienaguero", en: "Caimán Cienaguero National Festival" },
+    palette: ["#2E7D5B", "#F2C230"],
   },
   {
-    year: "20XX",
-    city: "París",
-    country: { es: "Francia", en: "France" },
-    event: { es: "Encuentro de culturas del mundo", en: "World cultures gathering" },
-    palette: ["#1F3A93", "#F4F1EC"],
-    photo: "/photos/02.jpeg",
-  },
-  {
-    year: "20XX",
-    city: "Buenos Aires",
-    country: { es: "Argentina", en: "Argentina" },
-    event: { es: "Festival latinoamericano de danza", en: "Latin American dance festival" },
+    year: "2022 – 2023",
+    city: "Santa Marta",
+    country: { es: "Magdalena, Colombia", en: "Magdalena, Colombia" },
+    event: { es: "Fiestas del Mar", en: "Fiestas del Mar (Sea Festival)" },
     palette: ["#7FC8D8", "#1F3A93"],
-    photo: "/photos/11.jpeg",
   },
   {
-    year: "20XX",
-    city: "Cali",
-    country: { es: "Colombia", en: "Colombia" },
-    event: { es: "Festival Petronio Álvarez", en: "Petronio Álvarez Festival" },
-    palette: ["#E2733B", "#2E7D5B"],
-    photo: "/photos/26.jpeg",
+    year: "2024",
+    city: "El Copey",
+    country: { es: "Cesar, Colombia", en: "Cesar, Colombia" },
+    event: { es: "Festival Nacional de Danzas", en: "National Dance Festival" },
+    palette: ["#E2733B", "#5A1E0E"],
+  },
+  {
+    year: "2023",
+    city: "Tocancipá",
+    country: { es: "Cundinamarca, Colombia", en: "Cundinamarca, Colombia" },
+    event: { es: "Festival Nacional de la Colombianidad", en: "National Festival of Colombianness" },
+    palette: ["#C8102E", "#F7D6E0"],
   },
 ];

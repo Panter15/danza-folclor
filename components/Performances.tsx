@@ -7,7 +7,7 @@ import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 /**
- * Art of Documentary "slide-over": a blurred full-screen photo sits behind the
+ * Art of Documentary "slide-over": a full-screen photo sits behind the
  * text and cross-fades as each dance scrolls past. A small sharp thumbnail strip,
  * framed with corner brackets, shows which photo you are on.
  */
@@ -54,12 +54,12 @@ export function Performances() {
       </header>
 
       <div className="relative">
-        {/* Sticky layer: blurred backgrounds + thumbnail strip. */}
+        {/* Sticky layer: full-screen photos + thumbnail strip. */}
         <div className="sticky top-0 h-svh overflow-hidden">
           {performances.map((perf, i) => (
             <div
               key={perf.name}
-              className="absolute inset-0 scale-110 blur-2xl transition-opacity duration-1000"
+              className="absolute inset-0 transition-opacity duration-1000"
               style={{
                 opacity: i === active ? 1 : 0,
                 background: `${photoLayer(perf.photo)}linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})`,
@@ -106,7 +106,7 @@ export function Performances() {
 
         {/* Scrolling text, pulled up over the sticky layer. On desktop the empty
             space lets clicks through to the thumbnail rail underneath, while the
-            name and description stay selectable. Mobile has no rail, so nothing changes. */}
+            name stays selectable. Mobile has no rail, so nothing changes. */}
         <div className="relative -mt-[100svh] md:pointer-events-none">
           {performances.map((perf, i) => (
             <article
@@ -120,7 +120,6 @@ export function Performances() {
                 </p>
                 <div>
                   <h3 className="display pointer-events-auto w-fit text-[16vw] md:text-[9vw]">{perf.name}</h3>
-                  <p className="pointer-events-auto mt-6 max-w-md text-lg text-white/85 md:text-xl">{perf.description[lang]}</p>
                 </div>
               </div>
             </article>
