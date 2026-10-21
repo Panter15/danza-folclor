@@ -1,39 +1,61 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { flyingImages, values } from "@/content/site";
-import { photoLayer } from "@/lib/photo";
+import { photoLayer, withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
-// Where each flying photo sits horizontally, how big it is, and how fast it
-// travels (depth). Faster = feels closer to the camera. Phones get their own
-// big, alternating positions (mLeft/mWidth) so each photo can be seen.
-const FLIGHT = [
-  { left: "6%", width: "22vw", mLeft: "4%", mWidth: "70vw", speed: 1.3 },
-  { left: "68%", width: "26vw", mLeft: "30%", mWidth: "66vw", speed: 0.9 },
-  { left: "38%", width: "16vw", mLeft: "8%", mWidth: "60vw", speed: 1.6 },
-  { left: "80%", width: "14vw", mLeft: "34%", mWidth: "62vw", speed: 1.2 },
-  { left: "14%", width: "18vw", mLeft: "2%", mWidth: "76vw", speed: 0.8 },
-  { left: "56%", width: "20vw", mLeft: "26%", mWidth: "70vw", speed: 1.4 },
-  { left: "28%", width: "15vw", mLeft: "10%", mWidth: "58vw", speed: 1.1 },
-  { left: "74%", width: "19vw", mLeft: "36%", mWidth: "60vw", speed: 1.5 },
-  { left: "2%", width: "16vw", mLeft: "0%", mWidth: "80vw", speed: 1.0 },
-  { left: "46%", width: "22vw", mLeft: "22%", mWidth: "72vw", speed: 0.85 },
-  { left: "86%", width: "12vw", mLeft: "38%", mWidth: "56vw", speed: 1.7 },
-  { left: "20%", width: "24vw", mLeft: "6%", mWidth: "68vw", speed: 1.25 },
-];
+/**
+ * Random photo layout that still covers the whole width: the screen is split
+ * into lanes, and every row of `lanes` photos uses each lane once, in a new
+ * random order. Widths and speeds are random within a range.
+ * Returns left/width in % of the stage, speed as a multiplier (faster = closer).
+ */
+export function layoutPhotos(count: number, lanes: number, minW: number, maxW: number, rand = Math.random) {
+  const laneW = 100 / lanes;
+  const spots: { left: number; width: number; speed: number }[] = [];
+  for (let row = 0; row * lanes < count; row++) {
+    const order = Array.from({ length: lanes }, (_, i) => i).sort(() => rand() - 0.5);
+    for (const lane of order) {
+      if (spots.length === count) break;
+      const width = Math.min(laneW, minW + rand() * (maxW - minW));
+      spots.push({ left: lane * laneW + rand() * (laneW - width), width, speed: 0.8 + rand() * 0.9 });
+    }
+  }
+  return spots;
+}
 
 export function About() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [viewing, setViewing] = useState<string | null>(null);
+
+  // Native modal: Esc, focus trapping and the backdrop come from the browser.
+  useEffect(() => {
+    const d = dialog.current;
+    if (!d) return;
+    if (viewing && !d.open) d.showModal();
+    if (!viewing && d.open) d.close();
+    // Stop the page scrolling underneath while a photo is open.
+    document.documentElement.style.overflow = viewing ? "hidden" : "";
+  }, [viewing]);
 
   // Flying photos: built once (they don't depend on the text).
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
 
-      mm.add("(prefers-reduced-motion: no-preference)", () => {
+      mm.add({ phone: "(max-width: 767px)", motion: "(prefers-reduced-motion: no-preference)" }, (ctx) => {
+        if (!ctx.conditions?.motion) return;
+        const photos = gsap.utils.shuffle(gsap.utils.toArray<HTMLElement>(".fly-photo"));
+        // Phones: one lane of big photos. Desktop: four lanes across the whole width.
+        const spots = ctx.conditions.phone
+          ? layoutPhotos(photos.length, 1, 58, 80)
+          : layoutPhotos(photos.length, 4, 16, 24);
+        photos.forEach((photo, i) => gsap.set(photo, { left: `${spots[i].left}%`, width: `${spots[i].width}%` }));
+
         // Each photo rises from below the screen to above it while the headline
         // stays pinned. Different speeds and start offsets give depth.
         const flight = gsap.timeline({
@@ -46,8 +68,8 @@ export function About() {
             invalidateOnRefresh: true,
           },
         });
-        gsap.utils.toArray<HTMLElement>(".fly-photo").forEach((photo, i) => {
-          const { speed } = FLIGHT[i % FLIGHT.length];
+        photos.forEach((photo, i) => {
+          const { speed } = spots[i];
           flight.fromTo(
             photo,
             { yPercent: 0, y: () => window.innerHeight * 1.1, scale: 0.85 },
@@ -96,31 +118,23 @@ export function About() {
       <div className="fly-stage relative h-[350svh] motion-reduce:h-auto">
         {/* bg-paper matters: the headline blends (difference) against this layer's own background. */}
         <div className="sticky top-0 h-svh overflow-hidden bg-paper motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
-          {flyingImages.map((img, i) => {
-            const spot = FLIGHT[i % FLIGHT.length];
-            return (
-              <div
-                key={i}
-                className="fly-photo absolute top-0 left-[var(--ml)] w-[var(--mw)] aspect-[3/4] overflow-hidden md:left-[var(--l)] md:w-[var(--w)] motion-reduce:hidden"
-                style={
-                  {
-                    "--l": spot.left,
-                    "--w": spot.width,
-                    "--ml": spot.mLeft,
-                    "--mw": spot.mWidth,
-                    transform: "translateY(110vh)",
-                  } as React.CSSProperties
-                }
-                aria-hidden="true"
-              >
-                {/* Inner layer zooms on hover; the outer one is moved by GSAP. */}
-                <div
-                  className="h-full w-full transition-transform duration-700 ease-out hover:scale-110"
-                  style={{ background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})` }}
-                />
-              </div>
-            );
-          })}
+          {flyingImages.map((img, i) => (
+            // left/width are set by the random layout above.
+            <button
+              key={i}
+              type="button"
+              onClick={() => img.photo && setViewing(img.photo)}
+              aria-label={`${t("viewPhoto")} ${i + 1}`}
+              className="fly-photo absolute top-0 aspect-[3/4] w-1/4 cursor-zoom-in overflow-hidden motion-reduce:hidden"
+              style={{ transform: "translateY(110vh)" }}
+            >
+              {/* Inner layer zooms on hover; the outer one is moved by GSAP. */}
+              <span
+                className="block h-full w-full transition-transform duration-700 ease-out hover:scale-110"
+                style={{ background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})` }}
+              />
+            </button>
+          ))}
 
           <div className="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-white mix-blend-difference motion-reduce:text-ink motion-reduce:mix-blend-normal">
             <p className="label mb-6">{t("aboutTitle")}</p>
@@ -170,6 +184,27 @@ export function About() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox: click outside the photo or press Esc to close. */}
+      <dialog
+        ref={dialog}
+        onClose={() => setViewing(null)}
+        onClick={(e) => e.target === e.currentTarget && setViewing(null)}
+        className="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-black/90"
+        data-lenis-prevent
+      >
+        {viewing && (
+          // eslint-disable-next-line @next/next/no-img-element -- static export, images are unoptimized anyway
+          <img src={withBase(viewing)} alt={t("photoAlt")} className="max-h-[90svh] max-w-[92vw] object-contain" />
+        )}
+        <button
+          type="button"
+          onClick={() => setViewing(null)}
+          className="label fixed right-4 top-4 bg-paper px-3 py-2 text-ink"
+        >
+          {t("close")} ✕
+        </button>
+      </dialog>
     </section>
   );
 }

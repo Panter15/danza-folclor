@@ -76,6 +76,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     whatsappMessage: "Hola, quisiera información sobre una presentación del grupo.",
     footerRights: "Todos los derechos reservados.",
     loading: "Cargando",
+    viewPhoto: "Ver foto",
+    photoAlt: "Foto de la Fundación Ancestros",
+    close: "Cerrar",
   },
   en: {
     navHome: "Home",
@@ -122,6 +125,9 @@ export const ui: Record<Lang, Record<string, string>> = {
     whatsappMessage: "Hello, I would like information about booking the group.",
     footerRights: "All rights reserved.",
     loading: "Loading",
+    viewPhoto: "View photo",
+    photoAlt: "Photo of the Ancestros Foundation",
+    close: "Close",
   },
 };
 
