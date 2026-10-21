@@ -64,6 +64,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     projectsIntro: "Contratos, proyectos y convenios legalmente soportados que hemos ejecutado:",
     festivalsIntro: "Eventos nacionales e internacionales en los que hemos ocupado lugares honoríficos:",
     otherYears: "Otros",
+    festivalsTitle: "Festivales",
+    projectsTitle: "Proyectos y convenios",
     showAll: "Ver todos",
     showLess: "Ver menos",
     performancesTitle: "Nuestro folclor",
@@ -79,6 +81,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     viewPhoto: "Ver foto",
     photoAlt: "Foto de la Fundación Ancestros",
     close: "Cerrar",
+    prevPhoto: "Foto anterior",
+    nextPhoto: "Foto siguiente",
   },
   en: {
     navHome: "Home",
@@ -113,6 +117,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     projectsIntro: "Legally supported contracts, projects and agreements we have carried out:",
     festivalsIntro: "National and international events where we have earned places of honour:",
     otherYears: "Other",
+    festivalsTitle: "Festivals",
+    projectsTitle: "Projects and agreements",
     showAll: "Show all",
     showLess: "Show less",
     performancesTitle: "Our folklore",
@@ -128,6 +134,8 @@ export const ui: Record<Lang, Record<string, string>> = {
     viewPhoto: "View photo",
     photoAlt: "Photo of the Ancestros Foundation",
     close: "Close",
+    prevPhoto: "Previous photo",
+    nextPhoto: "Next photo",
   },
 };
 

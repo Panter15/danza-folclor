@@ -26,20 +26,28 @@ export function layoutPhotos(count: number, lanes: number, minW: number, maxW: n
   return spots;
 }
 
+// Photos the lightbox can browse, in page order.
+const gallery = flyingImages.flatMap((img) => (img.photo ? [img.photo] : []));
+const roundButton =
+  "fixed grid h-12 w-12 place-items-center rounded-full border border-white/30 text-lg text-white transition-colors hover:bg-white hover:text-ink";
+
 export function About() {
   const { lang, t } = useLanguage();
   const root = useRef<HTMLElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
-  const [viewing, setViewing] = useState<string | null>(null);
+  // Index into gallery of the photo open in the lightbox, or null.
+  const [viewing, setViewing] = useState<number | null>(null);
+  const step = (dir: number) =>
+    setViewing((v) => (v === null ? v : (v + dir + gallery.length) % gallery.length));
 
   // Native modal: Esc, focus trapping and the backdrop come from the browser.
   useEffect(() => {
     const d = dialog.current;
     if (!d) return;
-    if (viewing && !d.open) d.showModal();
-    if (!viewing && d.open) d.close();
+    if (viewing !== null && !d.open) d.showModal();
+    if (viewing === null && d.open) d.close();
     // Stop the page scrolling underneath while a photo is open.
-    document.documentElement.style.overflow = viewing ? "hidden" : "";
+    document.documentElement.style.overflow = viewing !== null ? "hidden" : "";
   }, [viewing]);
 
   // Flying photos: built once (they don't depend on the text).
@@ -123,7 +131,7 @@ export function About() {
             <button
               key={i}
               type="button"
-              onClick={() => img.photo && setViewing(img.photo)}
+              onClick={() => img.photo && setViewing(gallery.indexOf(img.photo))}
               aria-label={`${t("viewPhoto")} ${i + 1}`}
               className="fly-photo absolute top-0 aspect-[3/4] w-1/4 cursor-zoom-in overflow-hidden motion-reduce:hidden"
               style={{ transform: "translateY(110vh)" }}
@@ -185,24 +193,44 @@ export function About() {
         </div>
       </div>
 
-      {/* Lightbox: click outside the photo or press Esc to close. */}
+      {/* Lightbox: Esc, a click on the backdrop or the close button closes it;
+          arrows (buttons or keyboard) browse all the photos. */}
       <dialog
         ref={dialog}
         onClose={() => setViewing(null)}
         onClick={(e) => e.target === e.currentTarget && setViewing(null)}
-        className="m-auto max-h-none max-w-none bg-transparent p-0 backdrop:bg-black/90"
+        onKeyDown={(e) => {
+          if (e.key === "ArrowRight") step(1);
+          if (e.key === "ArrowLeft") step(-1);
+        }}
+        className="h-svh max-h-none w-screen max-w-none bg-transparent p-0 backdrop:bg-black/95 backdrop:backdrop-blur-md"
         data-lenis-prevent
       >
-        {viewing && (
-          // eslint-disable-next-line @next/next/no-img-element -- static export, images are unoptimized anyway
-          <img src={withBase(viewing)} alt={t("photoAlt")} className="max-h-[90svh] max-w-[92vw] object-contain" />
-        )}
-        <button
-          type="button"
-          onClick={() => setViewing(null)}
-          className="label fixed right-4 top-4 bg-paper px-3 py-2 text-ink"
+        <div
+          className="flex h-full w-full items-center justify-center p-4 md:p-16"
+          onClick={(e) => e.target === e.currentTarget && setViewing(null)}
         >
-          {t("close")} ✕
+          {viewing !== null && (
+            // eslint-disable-next-line @next/next/no-img-element -- static export, images are unoptimized anyway
+            <img
+              key={viewing}
+              src={withBase(gallery[viewing])}
+              alt={t("photoAlt")}
+              className="max-h-full max-w-full object-contain shadow-2xl motion-safe:animate-[fade-in_300ms_ease-out]"
+            />
+          )}
+        </div>
+        <p className="label fixed bottom-6 left-1/2 -translate-x-1/2 text-white/70">
+          {viewing !== null && `${String(viewing + 1).padStart(2, "0")} / ${String(gallery.length).padStart(2, "0")}`}
+        </p>
+        <button type="button" onClick={() => setViewing(null)} aria-label={t("close")} className={`${roundButton} right-4 top-4`}>
+          ✕
+        </button>
+        <button type="button" onClick={() => step(-1)} aria-label={t("prevPhoto")} className={`${roundButton} bottom-4 left-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2`}>
+          ←
+        </button>
+        <button type="button" onClick={() => step(1)} aria-label={t("nextPhoto")} className={`${roundButton} bottom-4 right-4 md:bottom-auto md:top-1/2 md:-translate-y-1/2`}>
+          →
         </button>
       </dialog>
     </section>
