@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { tours } from "@/content/site";
+import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 export function Tours() {
@@ -66,7 +67,7 @@ export function Tours() {
         <div className="mb-10 flex items-end justify-between gap-4 px-4 md:px-8 lg:pl-48">
           <h2 className="display text-[12vw] md:text-[6vw]">
             {t("toursTitle")}{" "}
-            <span className="font-serif text-[0.45em] font-normal tracking-normal text-mute">{t("toursSubtitle")}</span>
+            <span className="text-[0.45em] font-normal tracking-normal text-mute">{t("toursSubtitle")}</span>
           </h2>
         </div>
 
@@ -76,10 +77,10 @@ export function Tours() {
             {tours.map((tour, i) => (
               <article key={`${tour.city}-${i}`} className="w-[78vw] shrink-0 sm:w-[46vw] lg:w-[30vw]">
                 <div className="relative h-[44svh] overflow-hidden">
-                  {/* Placeholder "photo": replace with a real image from this tour. */}
+                  {/* Photo from this tour (placeholder city/event text still to confirm). */}
                   <div
                     className="tour-media absolute -inset-x-[15%] inset-y-0"
-                    style={{ background: `linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
+                    style={{ background: `${photoLayer(tour.photo)}linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
                     aria-hidden="true"
                   />
                 </div>

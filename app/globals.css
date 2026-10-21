@@ -11,7 +11,6 @@
   --color-line: #e5e5e5;
   --color-accent: #ff5c02;
   --font-sans: var(--font-inter-tight), system-ui, sans-serif;
-  --font-serif: var(--font-goudy), Georgia, serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
