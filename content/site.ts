@@ -8,8 +8,9 @@ export type Performance = {
   name: string;
   region: Localized;
   description: Localized;
-  // Placeholder "photo" colours until real images arrive.
+  // Gradient shown behind the photo while it loads.
   palette: [string, string];
+  photo?: string;
 };
 
 export type Tour = {
@@ -18,6 +19,7 @@ export type Tour = {
   country: Localized;
   event: Localized;
   palette: [string, string];
+  photo?: string;
 };
 
 export const group = {
@@ -34,7 +36,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     aboutHeadline1: "Treinta años",
     aboutHeadline2: "llevando Colombia",
     aboutHeadline3: "al mundo",
-    performancesIntro: "Seis danzas, seis regiones, un solo país.",
+    performancesIntro: "Cuatro danzas, un mismo Caribe.",
     navPerformances: "Presentaciones",
     navTours: "Giras",
     navContact: "Contacto",
@@ -64,7 +66,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     aboutHeadline1: "Thirty years",
     aboutHeadline2: "taking Colombia",
     aboutHeadline3: "to the world",
-    performancesIntro: "Six dances, six regions, one country.",
+    performancesIntro: "Four dances, one Caribbean.",
     navPerformances: "Performances",
     navTours: "Tours",
     navContact: "Contact",
@@ -106,14 +108,14 @@ export const sections = [
 // them here; while it is empty, the hero draws an animated pollera instead.
 export const heroSequence: string[] = [];
 
-// Placeholder "photos" that fly past the history headline. Swap for real images.
-export const flyingImages: { palette: [string, string] }[] = [
-  { palette: ["#FCD116", "#CE1126"] },
-  { palette: ["#003893", "#7FC8D8"] },
-  { palette: ["#2E7D5B", "#F4E3B2"] },
-  { palette: ["#E2733B", "#5A1E0E"] },
-  { palette: ["#CE1126", "#F7D6E0"] },
-  { palette: ["#B5651D", "#FCD116"] },
+// Photos that fly past the history headline.
+export const flyingImages: { palette: [string, string]; photo?: string }[] = [
+  { palette: ["#FCD116", "#CE1126"], photo: "/photos/15.jpeg" },
+  { palette: ["#003893", "#7FC8D8"], photo: "/photos/12.jpeg" },
+  { palette: ["#2E7D5B", "#F4E3B2"], photo: "/photos/05.jpeg" },
+  { palette: ["#E2733B", "#5A1E0E"], photo: "/photos/24.jpeg" },
+  { palette: ["#CE1126", "#F7D6E0"], photo: "/photos/03.jpeg" },
+  { palette: ["#B5651D", "#FCD116"], photo: "/photos/13.jpeg" },
 ];
 
 export const performances: Performance[] = [
@@ -125,6 +127,27 @@ export const performances: Performance[] = [
       en: "Lit candles and swirling skirts to the beat of the drum.",
     },
     palette: ["#F2C230", "#C8102E"],
+    photo: "/photos/08.jpeg",
+  },
+  {
+    name: "Danza del Caimán",
+    region: { es: "Ciénaga, Magdalena", en: "Ciénaga, Magdalena" },
+    description: {
+      es: "La leyenda del caimán que se llevó a un niño, contada con humor y color.",
+      en: "The legend of the caiman that carried off a child, told with humour and colour.",
+    },
+    palette: ["#2E7D5B", "#F2C230"],
+    photo: "/photos/09.jpeg",
+  },
+  {
+    name: "Danza del Pilón",
+    region: { es: "Valledupar, Cesar", en: "Valledupar, Cesar" },
+    description: {
+      es: "El pilón y la batea: el trabajo de pilar el maíz convertido en fiesta.",
+      en: "Pestle and basket: the work of pounding maize turned into a celebration.",
+    },
+    palette: ["#FF4F8B", "#F2C230"],
+    photo: "/photos/06.jpeg",
   },
   {
     name: "Mapalé",
@@ -134,42 +157,7 @@ export const performances: Performance[] = [
       en: "Pure Afro-Colombian energy, fast and explosive.",
     },
     palette: ["#E2733B", "#5A1E0E"],
-  },
-  {
-    name: "Bambuco",
-    region: { es: "Región Andina", en: "Andean region" },
-    description: {
-      es: "Un cortejo elegante entre pañuelos y sombreros.",
-      en: "An elegant courtship of handkerchiefs and hats.",
-    },
-    palette: ["#2E7D5B", "#F4E3B2"],
-  },
-  {
-    name: "Joropo",
-    region: { es: "Los Llanos", en: "The Plains" },
-    description: {
-      es: "Zapateo veloz al son del arpa, el cuatro y las maracas.",
-      en: "Rapid footwork to the harp, cuatro and maracas.",
-    },
-    palette: ["#B5651D", "#F2C230"],
-  },
-  {
-    name: "Currulao",
-    region: { es: "Región Pacífica", en: "Pacific region" },
-    description: {
-      es: "La marimba de chonta y el canto que vienen del mar.",
-      en: "The chonta marimba and songs that come from the sea.",
-    },
-    palette: ["#1F3A93", "#7FC8D8"],
-  },
-  {
-    name: "Sanjuanero",
-    region: { es: "Huila y Tolima", en: "Huila and Tolima" },
-    description: {
-      es: "Coqueteo, alegría y el espíritu de las fiestas de San Juan.",
-      en: "Flirtation, joy and the spirit of the San Juan festivities.",
-    },
-    palette: ["#C8102E", "#F7D6E0"],
+    photo: "/photos/22.jpeg",
   },
 ];
 
@@ -180,6 +168,7 @@ export const tours: Tour[] = [
     country: { es: "Colombia", en: "Colombia" },
     event: { es: "Carnaval de Barranquilla", en: "Barranquilla Carnival" },
     palette: ["#F2C230", "#C8102E"],
+    photo: "/photos/19.jpeg",
   },
   {
     year: "20XX",
@@ -187,6 +176,7 @@ export const tours: Tour[] = [
     country: { es: "México", en: "Mexico" },
     event: { es: "Festival internacional de folclor", en: "International folk festival" },
     palette: ["#2E7D5B", "#C8102E"],
+    photo: "/photos/21.jpeg",
   },
   {
     year: "20XX",
@@ -194,6 +184,7 @@ export const tours: Tour[] = [
     country: { es: "España", en: "Spain" },
     event: { es: "Semana cultural colombiana", en: "Colombian cultural week" },
     palette: ["#C8102E", "#F2C230"],
+    photo: "/photos/23.jpeg",
   },
   {
     year: "20XX",
@@ -201,6 +192,7 @@ export const tours: Tour[] = [
     country: { es: "Francia", en: "France" },
     event: { es: "Encuentro de culturas del mundo", en: "World cultures gathering" },
     palette: ["#1F3A93", "#F4F1EC"],
+    photo: "/photos/02.jpeg",
   },
   {
     year: "20XX",
@@ -208,6 +200,7 @@ export const tours: Tour[] = [
     country: { es: "Argentina", en: "Argentina" },
     event: { es: "Festival latinoamericano de danza", en: "Latin American dance festival" },
     palette: ["#7FC8D8", "#1F3A93"],
+    photo: "/photos/11.jpeg",
   },
   {
     year: "20XX",
@@ -215,5 +208,6 @@ export const tours: Tour[] = [
     country: { es: "Colombia", en: "Colombia" },
     event: { es: "Festival Petronio Álvarez", en: "Petronio Álvarez Festival" },
     palette: ["#E2733B", "#2E7D5B"],
+    photo: "/photos/26.jpeg",
   },
 ];

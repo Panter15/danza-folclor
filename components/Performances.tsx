@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { gsap, ScrollTrigger, useGSAP } from "@/lib/gsap";
 import { performances } from "@/content/site";
+import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 /**
@@ -62,7 +63,7 @@ export function Performances() {
               className="absolute inset-0 scale-110 blur-2xl transition-opacity duration-1000"
               style={{
                 opacity: i === active ? 1 : 0,
-                background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})`,
+                background: `${photoLayer(perf.photo)}linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})`,
               }}
               aria-hidden="true"
             />
@@ -96,7 +97,7 @@ export function Performances() {
                         ? "h-[84px] w-[64px] opacity-100"
                         : "h-[28px] w-[40px] opacity-40 group-hover:opacity-90 group-hover:w-[48px]"
                     }`}
-                    style={{ background: `linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
+                    style={{ background: `${photoLayer(perf.photo)}linear-gradient(160deg, ${perf.palette[0]}, ${perf.palette[1]})` }}
                   />
                 </a>
               );

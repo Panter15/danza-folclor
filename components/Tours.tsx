@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { tours } from "@/content/site";
+import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 export function Tours() {
@@ -76,10 +77,10 @@ export function Tours() {
             {tours.map((tour, i) => (
               <article key={`${tour.city}-${i}`} className="w-[78vw] shrink-0 sm:w-[46vw] lg:w-[30vw]">
                 <div className="relative h-[44svh] overflow-hidden">
-                  {/* Placeholder "photo": replace with a real image from this tour. */}
+                  {/* Photo from this tour (placeholder city/event text still to confirm). */}
                   <div
                     className="tour-media absolute -inset-x-[15%] inset-y-0"
-                    style={{ background: `linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
+                    style={{ background: `${photoLayer(tour.photo)}linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
                     aria-hidden="true"
                   />
                 </div>

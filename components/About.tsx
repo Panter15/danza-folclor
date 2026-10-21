@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { flyingImages, stats } from "@/content/site";
+import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 // Where each flying photo sits horizontally, how big it is, and how fast it
@@ -116,7 +117,7 @@ export function About() {
                 style={{
                   left: spot.left,
                   width: spot.width,
-                  background: `linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})`,
+                  background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})`,
                   transform: "translateY(110vh)",
                 }}
                 aria-hidden="true"
