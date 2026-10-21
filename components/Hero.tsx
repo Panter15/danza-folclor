@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
 import { heroSequence } from "@/content/site";
+import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 // Pollera trim colours, outermost ruffle first.
@@ -75,7 +76,7 @@ export function Hero() {
       const frames = heroSequence.map((src) => {
         const img = new Image();
         img.onload = () => render();
-        img.src = src;
+        img.src = withBase(src);
         return img;
       });
 
@@ -151,13 +152,15 @@ export function Hero() {
     <section ref={root} id="top" className="relative h-[300svh] bg-paper motion-reduce:h-svh">
       <div className="sticky top-0 h-svh overflow-hidden">
         <canvas ref={canvas} className="absolute inset-0 h-full w-full" aria-hidden="true" />
+        {/* Video frames are busy and dark at the bottom; shade them so the headline stays readable. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
 
         <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48">
-          <p className="label mb-4 text-ink">{t("heroKicker")}</p>
-          <h1 className="display text-[14vw] md:text-[8vw]">
+          <p className="label mb-4 text-white">{t("heroKicker")}</p>
+          <h1 className="display text-[14vw] text-white md:text-[8vw]">
             {lines.map((line, i) => (
               <span key={i} className="block overflow-hidden pb-[0.08em]">
-                <span className={`hero-line-inner block ${i === 1 ? "font-serif font-normal tracking-normal text-mute" : ""}`}>
+                <span className={`hero-line-inner block ${i === 1 ? "font-serif font-normal tracking-normal text-white/75" : ""}`}>
                   {line}
                 </span>
               </span>
@@ -167,8 +170,8 @@ export function Hero() {
 
         {/* Signifier instead of a "scroll down" instruction: a dot travelling
             down a line says "there is more below" without any words. */}
-        <div className="scroll-cue absolute bottom-10 right-6 h-14 w-px bg-ink/15 md:right-8" aria-hidden="true">
-          <span className="scroll-cue-dot absolute -left-[2px] top-0 h-[5px] w-[5px] rounded-full bg-ink" />
+        <div className="scroll-cue absolute bottom-10 right-6 h-14 w-px bg-white/30 md:right-8" aria-hidden="true">
+          <span className="scroll-cue-dot absolute -left-[2px] top-0 h-[5px] w-[5px] rounded-full bg-white" />
         </div>
       </div>
     </section>

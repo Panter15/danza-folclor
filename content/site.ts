@@ -103,10 +103,13 @@ export const sections = [
   { id: "contacto", labelKey: "navContact" },
 ] as const;
 
-// Hero scroll sequence. Export a performance video to numbered frames
-// (e.g. `ffmpeg -i spin.mp4 -vf fps=30 public/sequence/%04d.webp`) and list
-// them here; while it is empty, the hero draws an animated pollera instead.
-export const heroSequence: string[] = [];
+// Hero scroll sequence: 100 frames (5 s) of a cumbia performance, exported from
+// a WhatsApp video to public/sequence/0001-0100.webp. Empty it to fall back to
+// the animated pollera drawing.
+export const heroSequence: string[] = Array.from(
+  { length: 100 },
+  (_, i) => `/sequence/${String(i + 1).padStart(4, "0")}.webp`,
+);
 
 // Photos that fly past the history headline.
 export const flyingImages: { palette: [string, string]; photo?: string }[] = [
