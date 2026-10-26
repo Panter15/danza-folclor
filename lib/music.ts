@@ -1,38 +1,51 @@
 import * as Tone from "tone";
 import { sections } from "@/content/site";
 
-// Original soundtrack generated in the browser, inspired by the caimán cienaguero:
-// llamador on the offbeat, guache, palmas, an improvising tambor alegre and a
-// gaita-like voice. Drum patterns and melodies are re-chosen while it plays and the
-// mix follows the section on screen, so it keeps changing instead of looping.
+// Original soundtrack generated in the browser, in the style of the caimán
+// cienaguero (not a copy of any recording): llamador on the offbeat, guache,
+// palmas, tambor alegre and a gaita-like voice. It is written as a song, a
+// 16-bar cycle (melody, drum break, melody again) over a steady groove, and the
+// mix follows the section on screen.
+// shortcut: the melody is an original stand-in; swap `melody` for the real one
+// once the group's musicians provide it.
 
 type Layer = "llamador" | "guache" | "palmas" | "alegre" | "gaita";
 type Hit = [step: number, high: boolean, velocity: number];
+type Note = [step: number, note: string, steps: number];
 
-// Level of each layer per section (missing = silent). The music builds as you scroll.
+// Level of each layer per section (missing = silent). Drums build as you scroll;
+// the melody is there from the start so the tune is recognisable.
 const mixes: Record<string, Partial<Record<Layer, number>>> = {
-  top: { llamador: 0.8, guache: 0.5 },
-  historia: { llamador: 1, guache: 0.7, palmas: 0.6 },
-  presentaciones: { llamador: 1, guache: 1, palmas: 0.4, alegre: 1 },
+  top: { llamador: 0.8, guache: 0.5, gaita: 0.7 },
+  historia: { llamador: 1, guache: 0.7, palmas: 0.6, gaita: 0.7 },
+  presentaciones: { llamador: 1, guache: 1, palmas: 0.4, alegre: 1, gaita: 0.8 },
   giras: { llamador: 1, guache: 1, palmas: 0.5, alegre: 1, gaita: 1 },
-  trayectoria: { llamador: 0.7, guache: 0.6, alegre: 0.5, gaita: 0.6 },
+  trayectoria: { llamador: 0.7, guache: 0.6, alegre: 0.5, gaita: 0.8 },
   contacto: { llamador: 1, guache: 1, palmas: 0.7, alegre: 1, gaita: 1 },
 };
 
-// Tambor alegre phrases over one bar of 16 steps; a fill closes every 8th bar.
-const alegrePatterns: Hit[][] = [
-  [[0, false, 0.9], [3, true, 0.6], [6, false, 0.7], [8, false, 0.9], [11, true, 0.6], [14, false, 0.7]],
-  [[0, false, 0.9], [2, true, 0.5], [4, false, 0.6], [7, true, 0.7], [8, false, 0.9], [12, false, 0.6], [15, true, 0.6]],
-  [[0, false, 0.9], [6, true, 0.7], [8, false, 0.8], [10, true, 0.5], [11, true, 0.6], [14, false, 0.7]],
-  [[0, false, 0.8], [4, true, 0.5], [8, false, 0.9], [9, true, 0.5], [12, true, 0.7], [14, true, 0.5]],
+// Tambor alegre: one groove, a variation closing each 4-bar phrase, a fill before the cycle restarts.
+const groove: Hit[] = [[0, false, 0.9], [3, true, 0.6], [6, false, 0.7], [8, false, 0.9], [11, true, 0.6], [14, false, 0.7]];
+const phraseEnd: Hit[] = [[0, false, 0.9], [3, true, 0.6], [6, false, 0.7], [8, false, 0.9], [10, true, 0.6], [12, true, 0.7], [14, true, 0.8]];
+const fill: Hit[] = [0, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15].map((s, i) => [s, i % 3 !== 0, 0.5 + s / 32]);
+
+// 8-bar gaita tune in steps from the start of the cycle: call (bars 1–2),
+// answer (3–4), a higher second phrase (5–6) and the way home (7–8).
+const melody: Note[] = [
+  [0, "E5", 4], [4, "D5", 2], [6, "C5", 2], [8, "A4", 6],
+  [16, "C5", 2], [18, "D5", 2], [20, "E5", 4], [24, "G5", 4], [28, "E5", 4],
+  [32, "D5", 4], [36, "C5", 2], [38, "A4", 2], [40, "G4", 6],
+  [48, "A4", 2], [50, "C5", 2], [52, "A4", 12],
+  [64, "A5", 4], [68, "G5", 2], [70, "E5", 2], [72, "G5", 4], [76, "A5", 4],
+  [80, "G5", 2], [82, "E5", 2], [84, "D5", 4], [88, "E5", 8],
+  [96, "C5", 2], [98, "D5", 2], [100, "E5", 4], [104, "D5", 2], [106, "C5", 2], [108, "A4", 4],
+  [112, "G4", 4], [116, "A4", 12],
 ];
-const alegreFill: Hit[] = [0, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15].map((s, i) => [s, i % 3 !== 0, 0.5 + s / 32]);
+// The cycle: tune (bars 0–7), drums only (8–11), call and answer again (12–15).
+const tune = new Map(melody.map(([s, note, len]) => [s, [note, len] as const]));
+const reprise = new Map(melody.filter(([s]) => s < 64).map(([s, note, len]) => [s + 192, [note, len] as const]));
 
-const scale = ["E4", "G4", "A4", "B4", "D5", "E5", "G5", "A5"];
-const restingNotes = [2, 5]; // phrases end on A4 or E5
-
-const rand = (n: number) => Math.floor(Math.random() * n);
-const humanize = () => Math.random() * 0.012;
+const humanize = () => Math.random() * 0.01; // a few ms, so it feels played, not quantised
 
 let master: Tone.Volume | undefined;
 let gains: Record<Layer, Tone.Gain>;
@@ -76,47 +89,25 @@ function build() {
   }).connect(new Tone.Vibrato(5.5, 0.08).connect(gains.gaita));
   gaita.volume.value = -6;
 
-  // Gaita notes waiting to be played, keyed by absolute 16th step.
-  const gaitaQueue = new Map<number, [note: string, seconds: number]>();
   const sixteenth = Tone.Time("16n").toSeconds();
-
-  // A short melodic walk through the scale that comes to rest on A or E.
-  function queueGaitaPhrase(from: number) {
-    let idx = 1 + rand(scale.length - 2);
-    let step = from;
-    const count = 3 + rand(4);
-    for (let i = 0; i < count; i++) {
-      const last = i === count - 1;
-      if (last) idx = restingNotes[rand(restingNotes.length)];
-      const len = last ? 8 : [2, 2, 4, 6][rand(4)];
-      gaitaQueue.set(step, [scale[idx], len * sixteenth * 0.9]);
-      idx = Math.min(scale.length - 1, Math.max(0, idx + [-2, -1, -1, 1, 1, 2][rand(6)]));
-      step += len;
-    }
-  }
+  // Guache accents: strong on the beat, medium on the offbeat, light in between.
+  const guacheVelocity = [0.6, 0.25, 0.4, 0.25];
 
   let n = 0;
-  let pattern = alegrePatterns[0];
   new Tone.Loop((time) => {
     const step = n % 16;
-    const bar = Math.floor(n / 16);
-    if (step === 0) {
-      pattern = bar % 8 === 7 ? alegreFill : alegrePatterns[rand(alegrePatterns.length)];
-      if (bar % 2 === 0 && gaitaQueue.size === 0 && Math.random() < 0.55) queueGaitaPhrase(n + 4 * rand(2));
-    }
+    const bar = Math.floor(n / 16) % 16;
+    const cycleStep = n % 256;
+    const pattern = bar === 15 ? fill : bar % 4 === 3 ? phraseEnd : groove;
+
     if (step % 4 === 2) llamador.triggerAttackRelease("B2", "16n", time + humanize(), 0.8);
-    if (Math.random() > 0.08) {
-      guache.triggerAttackRelease("32n", time + humanize(), step % 4 === 0 ? 0.6 : 0.25 + Math.random() * 0.2);
-    }
+    guache.triggerAttackRelease("32n", time + humanize(), guacheVelocity[step % 4]);
     if (step === 4 || step === 12) palmas.triggerAttackRelease("32n", time + humanize(), 0.7);
     for (const [s, high, v] of pattern) {
-      if (s === step) alegre.triggerAttackRelease(high ? "D3" : "G2", "16n", time + humanize(), v * (0.8 + Math.random() * 0.2));
+      if (s === step) alegre.triggerAttackRelease(high ? "D3" : "G2", "16n", time + humanize(), v);
     }
-    const note = gaitaQueue.get(n);
-    if (note) {
-      gaita.triggerAttackRelease(note[0], note[1], time);
-      gaitaQueue.delete(n);
-    }
+    const note = tune.get(cycleStep) ?? reprise.get(cycleStep);
+    if (note) gaita.triggerAttackRelease(note[0], note[1] * sixteenth * 0.92, time);
     n++;
   }, "16n").start(0);
   Tone.getTransport().bpm.value = 96;
