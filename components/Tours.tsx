@@ -75,9 +75,9 @@ export function Tours() {
         <div className="motion-reduce:overflow-x-auto">
           <div ref={track} className="flex w-max gap-4 px-4 md:gap-6 md:px-8 lg:pl-48">
             {tours.map((tour, i) => (
-              <article key={`${tour.city}-${i}`} className="w-[78vw] shrink-0 sm:w-[46vw] lg:w-[30vw]">
+              <article key={i} className="w-[78vw] shrink-0 sm:w-[46vw] lg:w-[30vw]">
                 <div className="relative h-[44svh] overflow-hidden">
-                  {/* Photo from this tour (placeholder city/event text still to confirm). */}
+                  {/* Photo from this tour, or the gradient when none is known. */}
                   <div
                     className="tour-media absolute -inset-x-[15%] inset-y-0"
                     style={{ background: `${photoLayer(tour.photo)}linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
@@ -85,12 +85,18 @@ export function Tours() {
                   />
                 </div>
                 <div className="mt-4 flex items-baseline justify-between gap-4">
-                  <h3 className="display text-3xl md:text-4xl">{tour.city}</h3>
-                  <span className="label text-mute">{tour.year}</span>
+                  {tour.city ? (
+                    <h3 className="display text-3xl md:text-4xl">{tour.city}</h3>
+                  ) : (
+                    <h3 className="display text-xl md:text-2xl">{tour.event[lang]}</h3>
+                  )}
+                  <span className="label shrink-0 text-mute">{tour.year}</span>
                 </div>
-                <p className="label mt-3 text-mute">
-                  {tour.country[lang]} — {tour.event[lang]}
-                </p>
+                {tour.city && (
+                  <p className="label mt-3 text-mute">
+                    {tour.country?.[lang]} — {tour.event[lang]}
+                  </p>
+                )}
               </article>
             ))}
           </div>
