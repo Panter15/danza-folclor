@@ -149,18 +149,13 @@ export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.we
 
 // Hero headlines, shown in turn over the video. In each, `yellow` is painted in the
 // CV's yellow and `flag` in the Colombian flag's stripes (and keeps swaying).
-// Wording from the site/CV: the original tagline, the About headline, the mission
-// (training artists) and the CV's "Región Caribe".
+// Wording from the site/CV: the original tagline, the mission (training artists) and
+// the CV's "Región Caribe". Not the About headline: it would repeat right below.
 export const heroTitles: { lines: Record<Lang, string[]>; yellow: Localized; flag: Localized }[] = [
   {
     lines: { es: ["Bailamos", "la memoria", "de Colombia"], en: ["We dance", "the memory", "of Colombia"] },
     yellow: { es: "memoria", en: "memory" },
     flag: { es: "Colombia", en: "Colombia" },
-  },
-  {
-    lines: { es: ["Desde 2014", "salvaguardando", "nuestro folclor"], en: ["Since 2014", "safeguarding", "our folklore"] },
-    yellow: { es: "2014", en: "2014" },
-    flag: { es: "folclor", en: "folklore" },
   },
   {
     lines: { es: ["Formamos", "artistas", "del Caribe"], en: ["Training", "artists", "of the Caribbean"] },
