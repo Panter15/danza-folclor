@@ -114,13 +114,20 @@ export function Hero() {
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const chars = gsap.utils.toArray<HTMLElement>(".hero-char");
         const tilt = () => gsap.utils.random(-30, 30);
+        // Pause while the hero is off screen, carry on when it comes back (like the video).
+        const whileVisible = () => ({
+          trigger: root.current,
+          start: "top bottom",
+          end: "bottom top",
+          toggleActions: "play pause resume pause",
+        });
         gsap
-          .timeline({ onComplete: () => setIndex((i) => (i + 1) % heroTitles.length) })
+          .timeline({ scrollTrigger: whileVisible(), onComplete: () => setIndex((i) => (i + 1) % heroTitles.length) })
           .from(chars, { yPercent: -120, rotate: tilt, opacity: 0, duration: 0.8, ease: "back.out(2.2)", stagger: 0.035 })
           .to(chars, { yPercent: 120, rotate: tilt, opacity: 0, duration: 0.5, ease: "power2.in", stagger: 0.02 }, `+=${TITLE_HOLD}`)
           .to({}, { duration: VIDEO_ONLY });
         // One word sways gently, like a skirt, while the title is up.
-        gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%" });
+        gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%", scrollTrigger: whileVisible() });
       });
     },
     { scope: root, dependencies: [index, lang], revertOnUpdate: true },
