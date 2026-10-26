@@ -12,26 +12,46 @@ const VIDEO_ONLY = 1.5; // seconds of video alone between titles
 export function Hero() {
   const { lang, t } = useLanguage();
   const [index, setIndex] = useState(0);
+  const [entered, setEntered] = useState(false);
   const root = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const loader = useRef<HTMLDivElement>(null);
   const loaderBar = useRef<HTMLDivElement>(null);
   const loaderPct = useRef<HTMLSpanElement>(null);
+  const loaderProgress = useRef<HTMLParagraphElement>(null);
+  const enterButton = useRef<HTMLButtonElement>(null);
+
+  // Browsers only allow sound after a click, tap or key press, so the loading screen
+  // ends with an "Entrar" button: that click opens the site and (via the music
+  // button's first-interaction listener) starts the music in the same moment.
+  function enter() {
+    setEntered(true);
+    gsap.to(loader.current, { autoAlpha: 0, duration: 0.6 });
+  }
 
   useGSAP(
     () => {
       const vid = video.current;
       if (!vid) return;
 
-      // Loading screen: fill the bar as the clip buffers, fade it out once it can play.
-      // An error or a slow network (6 s) also lifts it, so the page is never stuck.
+      // While the loading screen is up, the page behind it must not scroll.
+      const holdScroll = (e: Event) => {
+        e.preventDefault();
+        e.stopPropagation(); // keep it from the smooth-scroll listener on window
+      };
+      loader.current?.addEventListener("wheel", holdScroll, { passive: false });
+      loader.current?.addEventListener("touchmove", holdScroll, { passive: false });
+
+      // Loading screen: fill the bar as the clip buffers; once it can play, swap the
+      // progress line for the Entrar button. An error or a slow network (6 s) also
+      // shows the button, so nobody is stuck.
       let done = false;
       const hideLoader = () => {
         if (done) return;
         done = true;
         gsap.to(loaderBar.current, { scaleX: 1, duration: 0.3 });
-        if (loaderPct.current) loaderPct.current.textContent = "100%";
-        gsap.to(loader.current, { autoAlpha: 0, duration: 0.6, delay: 0.3 });
+        gsap.to(loaderProgress.current, { autoAlpha: 0, duration: 0.3 });
+        gsap.to(enterButton.current, { autoAlpha: 1, duration: 0.5, delay: 0.2, onComplete: () => enterButton.current?.focus() });
       };
       const onProgress = () => {
         if (done || !vid.duration || !vid.buffered.length) return;
@@ -113,6 +133,8 @@ export function Hero() {
         vid.removeEventListener("error", hideLoader);
         upright.removeEventListener("change", pickSource);
         still.removeEventListener("change", pickSource);
+        loader.current?.removeEventListener("wheel", holdScroll);
+        loader.current?.removeEventListener("touchmove", holdScroll);
         window.clearTimeout(fallback);
       };
     },
@@ -121,8 +143,10 @@ export function Hero() {
 
   // Titles take turns: letters dance in, the title holds, flies out, then a moment of
   // video alone before the next one. Rebuilt for each title and on language change.
+  // Starts once the visitor enters, so the first entrance isn't hidden by the loader.
   useGSAP(
     () => {
+      if (!entered) return;
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const chars = gsap.utils.toArray<HTMLElement>(".hero-char");
@@ -143,7 +167,7 @@ export function Hero() {
         gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%", scrollTrigger: whileVisible() });
       });
     },
-    { scope: root, dependencies: [index, lang], revertOnUpdate: true },
+    { scope: root, dependencies: [index, lang, entered], revertOnUpdate: true },
   );
 
   const title = heroTitles[index];
@@ -164,9 +188,20 @@ export function Hero() {
         <div className="h-px w-56 bg-line md:w-80" aria-hidden="true">
           <div ref={loaderBar} className="h-full origin-left bg-accent" style={{ transform: "scaleX(0)" }} />
         </div>
-        <p className="label text-mute">
-          {t("loading")} <span ref={loaderPct}>0%</span>
-        </p>
+        {/* The progress line and the button share one spot: the button replaces it. */}
+        <div className="grid place-items-center">
+          <p ref={loaderProgress} className="label col-start-1 row-start-1 text-mute">
+            {t("loading")} <span ref={loaderPct}>0%</span>
+          </p>
+          <button
+            ref={enterButton}
+            type="button"
+            onClick={enter}
+            className="label invisible col-start-1 row-start-1 border border-ink px-8 py-3 opacity-0 transition-colors hover:bg-ink hover:text-paper"
+          >
+            {t("enter")}
+          </button>
+        </div>
       </div>
       {/* Screens held upright (phones) get their own video: three whole frames of the
           montage stacked, each at a different moment, so the tall screen is full of

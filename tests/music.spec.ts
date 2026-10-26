@@ -20,36 +20,58 @@ function silentWav(seconds = 1, rate = 8000) {
   return b;
 }
 
-async function open(page: Page, song: "present" | "missing" = "present") {
+async function open(page: Page, { song = "present", muted = false } = {}) {
   await page.route("**/*.mp3", (route) =>
     song === "present"
       ? route.fulfill({ status: 200, contentType: "audio/wav", body: silentWav() })
       : route.fulfill({ status: 404, body: "" }),
   );
+  if (muted) await page.addInitScript(() => localStorage.setItem("ancestros-muted", "1"));
   await page.goto("/");
-  await page.waitForTimeout(2500); // loader and the autoplay attempt on load
+  await expect(enterButton(page)).toBeVisible({ timeout: 15_000 }); // loading screen done
 }
 
+const enterButton = (page: Page) => page.getByRole("button", { name: "Entrar" });
 const playing = (page: Page) => page.evaluate(() => !document.querySelector("audio")!.paused);
 const savedMuted = (page: Page) => page.evaluate(() => localStorage.getItem("ancestros-muted"));
 
-test("blocked on load; a first click on Música plays and is not saved as muted", async ({ page }) => {
+// Whether sound is blocked before Entrar is up to the browser (the test browser
+// sometimes allows it), so that isn't asserted; what Entrar does is.
+test("Entrar opens the site and starts the music", async ({ page }) => {
   await open(page);
-  expect(await playing(page)).toBe(false);
-  await page.click("[data-music-toggle]");
+  await enterButton(page).click();
   await expect.poll(() => playing(page)).toBe(true);
-  expect(await savedMuted(page)).not.toBe("1");
+  await expect(page.getByRole("status")).toBeHidden();
 });
 
-test("a first click anywhere else starts the music", async ({ page }) => {
+test("the loading screen keeps the page from scrolling behind it", async ({ page }) => {
   await open(page);
-  await page.mouse.click(600, 400);
+  await page.mouse.wheel(0, 1500);
+  await page.waitForTimeout(800);
+  expect(await page.evaluate(() => window.scrollY)).toBe(0);
+});
+
+test("Música turns it off and that is remembered", async ({ page }) => {
+  await open(page);
+  await enterButton(page).click();
+  await expect.poll(() => playing(page)).toBe(true);
+  await page.click("[data-music-toggle]");
+  await expect.poll(() => playing(page)).toBe(false);
+  expect(await savedMuted(page)).toBe("1");
+});
+
+test("a visitor who muted it enters in silence, and Música still turns it on", async ({ page }) => {
+  await open(page, { muted: true });
+  await enterButton(page).click();
+  await page.waitForTimeout(1000);
+  expect(await playing(page)).toBe(false);
+  await page.click("[data-music-toggle]");
   await expect.poll(() => playing(page)).toBe(true);
 });
 
 test("without the song file the Música button hides", async ({ page }) => {
-  await open(page, "missing");
-  await page.mouse.click(600, 400);
+  await open(page, { song: "missing" });
+  await enterButton(page).click();
   await expect(page.locator("[data-music-toggle]")).toHaveCount(0);
 });
 
@@ -58,17 +80,17 @@ test.describe("phone", () => {
   const { viewport, userAgent, deviceScaleFactor, isMobile, hasTouch } = devices["Pixel 7"];
   test.use({ viewport, userAgent, deviceScaleFactor, isMobile, hasTouch });
 
-  test("a tap starts the music", async ({ page }) => {
+  test("tapping Entrar starts the music", async ({ page }) => {
     await open(page);
-    await page.tap("h1");
+    await enterButton(page).tap();
     await expect.poll(() => playing(page)).toBe(true);
   });
 
-  test("scrolling first doesn't stop a later tap from starting it", async ({ page }) => {
+  test("a swipe on the loading screen first doesn't stop Entrar from starting it", async ({ page }) => {
     await open(page);
     const cdp = await page.context().newCDPSession(page);
     await cdp.send("Input.synthesizeScrollGesture", { x: 200, y: 600, yDistance: -300, gestureSourceType: "touch" });
-    await page.tap("h1");
+    await enterButton(page).tap();
     await expect.poll(() => playing(page)).toBe(true);
   });
 });
