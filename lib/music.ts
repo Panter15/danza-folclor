@@ -16,17 +16,27 @@ type Note = [step: number, note: string, steps: number];
 // Level of each layer per section (missing = silent). Drums build as you scroll;
 // the melody is there from the start so the tune is recognisable.
 const mixes: Record<string, Partial<Record<Layer, number>>> = {
-  top: { llamador: 0.8, guache: 0.5, gaita: 0.7 },
-  historia: { llamador: 1, guache: 0.7, palmas: 0.6, gaita: 0.7 },
-  presentaciones: { llamador: 1, guache: 1, palmas: 0.4, alegre: 1, gaita: 0.8 },
-  giras: { llamador: 1, guache: 1, palmas: 0.5, alegre: 1, gaita: 1 },
-  trayectoria: { llamador: 0.7, guache: 0.6, alegre: 0.5, gaita: 0.8 },
-  contacto: { llamador: 1, guache: 1, palmas: 0.7, alegre: 1, gaita: 1 },
+  // The reference is drum-driven with little melody, so the drums lead and the gaita stays light.
+  top: { llamador: 0.8, guache: 0.6, alegre: 0.6, gaita: 0.4 },
+  historia: { llamador: 1, guache: 0.8, palmas: 0.6, alegre: 0.8, gaita: 0.4 },
+  presentaciones: { llamador: 1, guache: 1, palmas: 0.5, alegre: 1, gaita: 0.5 },
+  giras: { llamador: 1, guache: 1, palmas: 0.6, alegre: 1, gaita: 0.6 },
+  trayectoria: { llamador: 0.7, guache: 0.6, alegre: 0.6, gaita: 0.5 },
+  contacto: { llamador: 1, guache: 1, palmas: 0.7, alegre: 1, gaita: 0.6 },
 };
 
-// Tambor alegre: one groove, a variation closing each 4-bar phrase, a fill before the cycle restarts.
-const groove: Hit[] = [[0, false, 0.9], [3, true, 0.6], [6, false, 0.7], [8, false, 0.9], [11, true, 0.6], [14, false, 0.7]];
-const phraseEnd: Hit[] = [[0, false, 0.9], [3, true, 0.6], [6, false, 0.7], [8, false, 0.9], [10, true, 0.6], [12, true, 0.7], [14, true, 0.8]];
+// Groove measured from a reference recording of the song (onset strength folded onto
+// the beat grid): low drum on every beat plus a pickup on the last 16th of each
+// pair of beats, lighter high strokes just after the beat. Then a variation closing
+// each 4-bar phrase and a fill before the cycle restarts.
+const groove: Hit[] = [
+  [0, false, 0.9], [1, true, 0.45], [4, false, 0.9], [5, true, 0.45], [7, false, 0.6],
+  [8, false, 0.9], [9, true, 0.45], [12, false, 0.9], [13, true, 0.45], [15, false, 0.6],
+];
+const phraseEnd: Hit[] = [
+  [0, false, 0.9], [1, true, 0.45], [4, false, 0.9], [5, true, 0.45], [7, false, 0.6],
+  [8, false, 0.9], [10, true, 0.6], [11, true, 0.6], [12, false, 0.9], [14, true, 0.7], [15, true, 0.8],
+];
 const fill: Hit[] = [0, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15].map((s, i) => [s, i % 3 !== 0, 0.5 + s / 32]);
 
 // 8-bar gaita tune in steps from the start of the cycle: call (bars 1–2),
@@ -90,8 +100,8 @@ function build() {
   gaita.volume.value = -6;
 
   const sixteenth = Tone.Time("16n").toSeconds();
-  // Guache accents: strong on the beat, medium on the offbeat, light in between.
-  const guacheVelocity = [0.6, 0.25, 0.4, 0.25];
+  // Guache accents as measured: strong on the beat, medium on the offbeat, light in between.
+  const guacheVelocity = [0.6, 0.12, 0.27, 0.08];
 
   let n = 0;
   new Tone.Loop((time) => {
@@ -100,17 +110,19 @@ function build() {
     const cycleStep = n % 256;
     const pattern = bar === 15 ? fill : bar % 4 === 3 ? phraseEnd : groove;
 
+    // Drums tuned to E, G# and B, the E major colour the reference's drums ring in.
     if (step % 4 === 2) llamador.triggerAttackRelease("B2", "16n", time + humanize(), 0.8);
     guache.triggerAttackRelease("32n", time + humanize(), guacheVelocity[step % 4]);
     if (step === 4 || step === 12) palmas.triggerAttackRelease("32n", time + humanize(), 0.7);
     for (const [s, high, v] of pattern) {
-      if (s === step) alegre.triggerAttackRelease(high ? "D3" : "G2", "16n", time + humanize(), v);
+      if (s === step) alegre.triggerAttackRelease(high ? "G#2" : "E2", "16n", time + humanize(), v);
     }
     const note = tune.get(cycleStep) ?? reprise.get(cycleStep);
-    if (note) gaita.triggerAttackRelease(note[0], note[1] * sixteenth * 0.92, time);
+    // The tune is written in C/A pentatonic; +4 semitones puts it in E major with the drums.
+    if (note) gaita.triggerAttackRelease(Tone.Frequency(note[0]).transpose(4).toNote(), note[1] * sixteenth * 0.92, time);
     n++;
   }, "16n").start(0);
-  Tone.getTransport().bpm.value = 96;
+  Tone.getTransport().bpm.value = 144; // measured from the reference recording
 
   // Follow the section in the middle of the screen.
   const observer = new IntersectionObserver(
