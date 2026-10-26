@@ -20,6 +20,7 @@ export function SoundToggle() {
   const [on, setOn] = useState(false);
   // What the visitor wants, kept apart from playback: hiding the tab pauses but doesn't mute.
   const wanted = useRef(false);
+  const [missing, setMissing] = useState(false);
 
   async function start() {
     const el = audio.current;
@@ -53,9 +54,11 @@ export function SoundToggle() {
     if (muted) return;
 
     const events = ["pointerdown", "keydown", "touchend"] as const;
-    const onFirstInteraction = () => {
-      events.forEach((e) => window.removeEventListener(e, onFirstInteraction, true));
-      // Skip if the visitor's first click was the Música button itself (it handles that).
+    const onFirstInteraction = (e: Event) => {
+      events.forEach((name) => window.removeEventListener(name, onFirstInteraction, true));
+      // A first click on the Música button is left to the button; starting here too
+      // would make its click see "on" and mute it straight away.
+      if ((e.target as Element | null)?.closest?.("[data-music-toggle]")) return;
       if (wanted.current || !audio.current?.paused) return;
       start();
     };
@@ -91,34 +94,39 @@ export function SoundToggle() {
 
   return (
     <>
-      {/* preload="auto" so it is ready to start on the first interaction. */}
+      {/* preload="none": the 6 MB song downloads only when it is actually played. */}
       <audio
         ref={audio}
         src={withBase(SONG)}
         loop
-        preload="auto"
+        preload="none"
         onPlay={() => setOn(true)}
         onPause={() => setOn(false)}
+        onError={() => setMissing(true)}
       />
-      <button
-        type="button"
-        onClick={toggle}
-        aria-pressed={on}
-        className={`label flex items-center gap-2 px-1 py-1 transition-opacity ${on ? "" : "opacity-60 hover:opacity-100"}`}
-      >
-        {/* Moving bars = sound is playing; flat bars crossed out = muted. */}
-        <span aria-hidden="true" className="relative flex h-3 items-end gap-[2px]">
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              className={`w-[2px] bg-current ${on ? "sound-bar" : "h-1"}`}
-              style={{ animationDelay: `${i * 0.18}s` }}
-            />
-          ))}
-          {!on && <span className="absolute -inset-x-[3px] top-1/2 h-px -rotate-45 bg-current" />}
-        </span>
-        {t("music")}
-      </button>
+      {/* No song file (e.g. not published yet): no button rather than one that does nothing. */}
+      {!missing && (
+        <button
+          data-music-toggle
+          type="button"
+          onClick={toggle}
+          aria-pressed={on}
+          className={`label flex items-center gap-2 px-1 py-1 transition-opacity ${on ? "" : "opacity-60 hover:opacity-100"}`}
+        >
+          {/* Moving bars = sound is playing; flat bars crossed out = muted. */}
+          <span aria-hidden="true" className="relative flex h-3 items-end gap-[2px]">
+            {[0, 1, 2].map((i) => (
+              <span
+                key={i}
+                className={`w-[2px] bg-current ${on ? "sound-bar" : "h-1"}`}
+                style={{ animationDelay: `${i * 0.18}s` }}
+              />
+            ))}
+            {!on && <span className="absolute -inset-x-[3px] top-1/2 h-px -rotate-45 bg-current" />}
+          </span>
+          {t("music")}
+        </button>
+      )}
     </>
   );
 }
