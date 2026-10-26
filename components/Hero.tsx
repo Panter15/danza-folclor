@@ -134,9 +134,17 @@ export function Hero() {
           {t("loading")} <span ref={loaderPct}>0%</span>
         </p>
       </div>
+      {/* Screens held upright (phones): zooming the wide clips to fill the height
+          cut most dancers off, so the whole frame is shown, a bit above centre,
+          over a blurred still of the performance. */}
+      <div
+        className="absolute inset-0 hidden scale-110 bg-cover bg-center blur-2xl portrait:block"
+        style={{ backgroundImage: `url("${withBase(heroVideo.poster)}")` }}
+        aria-hidden="true"
+      />
       <video
         ref={video}
-        className="absolute inset-0 h-full w-full object-cover"
+        className="absolute inset-0 h-full w-full object-cover portrait:object-contain portrait:object-[center_38%]"
         src={withBase(heroVideo.src)}
         poster={withBase(heroVideo.poster)}
         muted
