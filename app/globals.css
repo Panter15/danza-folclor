@@ -43,20 +43,6 @@ body {
   letter-spacing: -0.045em;
 }
 
-/* Hero: a word painted in the Colombian flag (yellow half, blue and red quarters).
-   Set per letter because each letter is its own animated box. The stops are shifted
-   for the padding below, so the flag proportions fall on the letters' ink. */
-.hero-flag .hero-char {
-  background: linear-gradient(180deg, #fcd116 0 53%, #003893 53% 63%, #ce1126 63%);
-  /* Kaushan's tall, slanted letters overflow their box; padding (cancelled by the
-     negative margin) stretches the painted area so no stroke is cut off. */
-  padding: 0.2em 0.08em;
-  margin: -0.2em -0.08em;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
 /* Top bar: the zigzag band from the group's CV, redrawn minimal and kept faint
    behind the name and buttons (z-index -1 stays inside the bar's stacking context). */
 .nav-pattern::before {

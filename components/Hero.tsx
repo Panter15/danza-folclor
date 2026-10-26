@@ -105,16 +105,17 @@ export function Hero() {
           .from(chars, { yPercent: -120, rotate: tilt, opacity: 0, duration: 0.8, ease: "back.out(2.2)", stagger: 0.035 })
           .to(chars, { yPercent: 120, rotate: tilt, opacity: 0, duration: 0.5, ease: "power2.in", stagger: 0.02 }, `+=${TITLE_HOLD}`)
           .to({}, { duration: VIDEO_ONLY });
-        // The flag-coloured word sways gently, like a skirt, while the title is up.
-        gsap.fromTo(".hero-flag", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%" });
+        // One word sways gently, like a skirt, while the title is up.
+        gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%" });
       });
     },
     { scope: root, dependencies: [index, lang], revertOnUpdate: true },
   );
 
   const title = heroTitles[index];
-  const wordClass = (word: string) =>
-    word === title.yellow[lang] ? "text-[#FFC20E]" : word === title.flag[lang] ? "hero-flag" : "";
+  const lines = title.lines[lang];
+  // Lines step across the width like a diagonal: first left, middle centred, last right.
+  const align = (i: number) => (i === 0 ? "text-left" : i === lines.length - 1 ? "text-right" : "text-center");
 
   return (
     <section ref={root} id="top" className="relative h-svh overflow-hidden bg-paper">
@@ -147,15 +148,16 @@ export function Hero() {
       {/* Some clips are bright (white walls, daylight); shade them so the headline stays readable. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" aria-hidden="true" />
 
-      <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48" style={{ filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.55))" }}>
+      {/* Right padding keeps the last line clear of the scroll cue. */}
+      <div className="hero-copy absolute inset-x-0 bottom-0 pb-12 pl-4 pr-12 md:pl-8 md:pr-20 lg:pl-48" style={{ filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.55))" }}>
         {/* Screen readers get the plain title; the letter spans are only for the animation. */}
-        <h1 key={index} className="display text-[13vw] text-white md:text-[6.5vw]" aria-label={title.lines[lang].join(" ")}>
-          {title.lines[lang].map((line, i) => (
-            <span key={i} className="block" aria-hidden="true">
+        <h1 key={index} className="display text-[13vw] text-white md:text-[6.5vw]" aria-label={lines.join(" ")}>
+          {lines.map((line, i) => (
+            <span key={i} className={`block ${align(i)}`} aria-hidden="true">
               {line.split(" ").map((word, j) => (
                 <Fragment key={j}>
                   {j > 0 && " "}
-                  <span className={`inline-block ${wordClass(word)}`}>
+                  <span className={`inline-block ${word === title.sway[lang] ? "hero-sway" : ""}`}>
                     {[...word].map((ch, k) => (
                       <span key={k} className="hero-char inline-block">
                         {ch}

@@ -147,20 +147,18 @@ export const sections = [
 // 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It loops only while the hero is on screen.
 export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
 
-// Hero headlines, shown in turn over the video. In each, `yellow` is painted in the
-// CV's yellow and `flag` in the Colombian flag's stripes (and keeps swaying).
-// Wording from the site/CV: the original tagline, the mission (training artists) and
-// the CV's "Región Caribe". Not the About headline: it would repeat right below.
-export const heroTitles: { lines: Record<Lang, string[]>; yellow: Localized; flag: Localized }[] = [
+// Hero headlines, shown in turn over the video, all white; the `sway` word keeps
+// swaying gently. Wording from the site/CV: the original tagline, the mission
+// (training artists) and the CV's "Región Caribe". Not the About headline: it would
+// repeat right below.
+export const heroTitles: { lines: Record<Lang, string[]>; sway: Localized }[] = [
   {
     lines: { es: ["Bailamos", "la memoria", "de Colombia"], en: ["We dance", "the memory", "of Colombia"] },
-    yellow: { es: "memoria", en: "memory" },
-    flag: { es: "Colombia", en: "Colombia" },
+    sway: { es: "Colombia", en: "Colombia" },
   },
   {
     lines: { es: ["Formamos", "artistas", "del Caribe"], en: ["Training", "artists", "of the Caribbean"] },
-    yellow: { es: "artistas", en: "artists" },
-    flag: { es: "Caribe", en: "Caribbean" },
+    sway: { es: "Caribe", en: "Caribbean" },
   },
 ];
 
