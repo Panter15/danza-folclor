@@ -25,6 +25,6 @@ Work on a new branch and open a PR.
 
 ## Music
 
-The "Música" button plays `public/music/caiman-cienaguero.mp3`. That file is **git-ignored on purpose**: the group
-does not yet have permission to publish the recording. Without it the button hides itself. Only remove the line from
-`.gitignore` once permission exists (or the file is the group's own recording) — git history keeps a file forever.
+The "Música" button plays `public/music/caiman-cienaguero.mp3`, a recording of "Caimán Cienaguero" published by
+decision of the site owner (2026-10-26) without a confirmed licence. If the rights holder objects, replace it with the
+group's own recording. If the file is missing, the button hides itself.

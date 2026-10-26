@@ -5,7 +5,7 @@ import { gsap } from "@/lib/gsap";
 import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
-// "Caimán Cienaguero". Git-ignored until the group has permission to publish it.
+// "Caimán Cienaguero" (see README, Music).
 const SONG = "/music/caiman-cienaguero.mp3";
 const VOLUME = 0.35;
 const MUTED_KEY = "ancestros-muted";
