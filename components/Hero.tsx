@@ -43,9 +43,19 @@ export function Hero() {
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Plays once (no loop) and rests on its last frame: movement on arrival,
-        // then calm, and no more data used. Reduced motion keeps the poster.
-        vid.play().catch(() => {});
+        // Loops only while someone can see it: paused when the hero is scrolled off
+        // screen or the tab is hidden, resumed on return. Reduced motion keeps the poster.
+        let inView = true;
+        const update = () => {
+          if (inView && !document.hidden) vid.play().catch(() => {});
+          else vid.pause();
+        };
+        const observer = new IntersectionObserver(([entry]) => {
+          inView = entry.isIntersecting;
+          update();
+        });
+        observer.observe(vid);
+        document.addEventListener("visibilitychange", update);
 
         // Headline slides up on load, then fades out as the page scrolls away.
         gsap.from(".hero-line-inner", { yPercent: 110, duration: 1.2, ease: "power4.out", stagger: 0.1, delay: 0.2 });
@@ -61,6 +71,12 @@ export function Hero() {
           ease: "none",
           scrollTrigger: { trigger: root.current, start: "top top", end: "20% top", scrub: true },
         });
+
+        return () => {
+          observer.disconnect();
+          document.removeEventListener("visibilitychange", update);
+          vid.pause();
+        };
       });
 
       return () => {
@@ -98,6 +114,7 @@ export function Hero() {
         src={withBase(heroVideo.src)}
         poster={withBase(heroVideo.poster)}
         muted
+        loop
         playsInline
         preload="auto"
         aria-hidden="true"
