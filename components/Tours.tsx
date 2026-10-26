@@ -101,7 +101,8 @@ export function Tours() {
                   ) : (
                     <h3 className="display text-xl md:text-2xl">{tour.event[lang]}</h3>
                   )}
-                  <span className="label shrink-0 text-mute">{tour.year}</span>
+                  {/* Latest year only; the full ranges stay in Trayectoria. */}
+                  <span className="label shrink-0 text-mute">{latestYear(tour.year)}</span>
                 </div>
                 {tour.city && (
                   <p className="label mt-3 text-mute">
