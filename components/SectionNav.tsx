@@ -43,7 +43,7 @@ export function SectionNav() {
 
   return (
     <nav
-      aria-label="Secciones"
+      aria-label="Secciones / Sections"
       className="pointer-events-none fixed left-6 top-1/2 z-40 hidden -translate-y-1/2 text-white mix-blend-difference lg:block"
     >
       <div className="flex gap-4">
