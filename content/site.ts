@@ -148,13 +148,9 @@ export const sections = [
   { id: "contacto", labelKey: "navContact" },
 ] as const;
 
-// Hero scroll sequence: 100 frames (5 s) of a cumbia performance, exported from
-// a WhatsApp video to public/sequence/0001-0100.webp. Empty it to fall back to
-// the animated pollera drawing.
-export const heroSequence: string[] = Array.from(
-  { length: 100 },
-  (_, i) => `/sequence/${String(i + 1).padStart(4, "0")}.webp`,
-);
+// Hero clip: 10 silent seconds (157.5–167.5 s) of a cumbia performance from the
+// group's WhatsApp video, re-encoded to WebM (~2 MB). It plays once and stops.
+export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
 
 // Photos that fly past the history headline.
 export const flyingImages: { palette: [string, string]; photo?: string }[] = [

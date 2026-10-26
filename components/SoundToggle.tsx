@@ -23,8 +23,8 @@ export function SoundToggle() {
       aria-pressed={on}
       className={`label flex items-center gap-2 px-1 py-1 transition-opacity ${on ? "" : "opacity-60 hover:opacity-100"}`}
     >
-      {/* Moving bars = sound is playing; flat bars = muted. */}
-      <span aria-hidden="true" className="flex h-3 items-end gap-[2px]">
+      {/* Moving bars = sound is playing; flat bars crossed out = muted. */}
+      <span aria-hidden="true" className="relative flex h-3 items-end gap-[2px]">
         {[0, 1, 2].map((i) => (
           <span
             key={i}
@@ -32,6 +32,7 @@ export function SoundToggle() {
             style={{ animationDelay: `${i * 0.18}s` }}
           />
         ))}
+        {!on && <span className="absolute -inset-x-[3px] top-1/2 h-px -rotate-45 bg-current" />}
       </span>
       {t("music")}
     </button>

@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { group, heroSequence } from "@/content/site";
+import { group, heroVideo } from "@/content/site";
 import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
@@ -57,7 +57,7 @@ function easeOutCubic(x: number) {
 export function Hero() {
   const { t } = useLanguage();
   const root = useRef<HTMLElement>(null);
-  const canvas = useRef<HTMLCanvasElement>(null);
+  const video = useRef<HTMLVideoElement>(null);
   const skirt = useRef<HTMLCanvasElement>(null);
   const loader = useRef<HTMLDivElement>(null);
   const loaderBar = useRef<HTMLDivElement>(null);
@@ -65,69 +65,43 @@ export function Hero() {
 
   useGSAP(
     () => {
-      const el = canvas.current;
-      const ctx = el?.getContext("2d");
-      if (!el || !ctx) return;
+      const vid = video.current;
       const skirtEl = skirt.current;
       const skirtCtx = skirtEl?.getContext("2d");
+      if (!vid || !skirtEl || !skirtCtx) return;
 
       // Keep the canvas sharp on high-DPI screens.
       const size = () => {
         const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        el.width = el.clientWidth * dpr;
-        el.height = el.clientHeight * dpr;
-        if (skirtEl) {
-          skirtEl.width = skirtEl.clientWidth * dpr;
-          skirtEl.height = skirtEl.clientHeight * dpr;
-        }
+        skirtEl.width = skirtEl.clientWidth * dpr;
+        skirtEl.height = skirtEl.clientHeight * dpr;
       };
 
-      // Real frames (Radian-style image sequence) if provided, otherwise the drawn pollera.
-      // Loading screen: fill the bar as frames arrive, fade it out once all are in.
-      // Failed frames count too, so a missing file never leaves the screen stuck.
-      let settled = 0;
-      const onSettled = () => {
-        settled += 1;
-        const share = settled / heroSequence.length;
+      // Loading screen: fill the bar as the clip buffers, fade it out once it can play.
+      // An error or a slow network (6 s) also lifts it, so the page is never stuck.
+      let done = false;
+      const hideLoader = () => {
+        if (done) return;
+        done = true;
+        gsap.to(loaderBar.current, { scaleX: 1, duration: 0.3 });
+        if (loaderPct.current) loaderPct.current.textContent = "100%";
+        gsap.to(loader.current, { autoAlpha: 0, duration: 0.6, delay: 0.3 });
+      };
+      const onProgress = () => {
+        if (done || !vid.duration || !vid.buffered.length) return;
+        const share = Math.min(1, vid.buffered.end(vid.buffered.length - 1) / vid.duration);
         gsap.to(loaderBar.current, { scaleX: share, duration: 0.3, ease: "power2.out" });
         if (loaderPct.current) loaderPct.current.textContent = `${Math.round(share * 100)}%`;
-        if (settled === heroSequence.length) {
-          gsap.to(loader.current, { autoAlpha: 0, duration: 0.6, delay: 0.3 });
-        }
       };
-      if (!heroSequence.length) gsap.set(loader.current, { autoAlpha: 0 });
+      vid.addEventListener("progress", onProgress);
+      vid.addEventListener("canplaythrough", hideLoader);
+      vid.addEventListener("error", hideLoader);
+      const fallback = window.setTimeout(hideLoader, 6000);
+      if (vid.readyState >= 4) hideLoader();
 
-      const frames = heroSequence.map((src) => {
-        const img = new Image();
-        img.onload = () => {
-          render();
-          onSettled();
-        };
-        img.onerror = onSettled;
-        img.src = withBase(src);
-        return img;
-      });
-
+      // The pollera spins open in the corner as you scroll, over the video.
       const state = { p: 0 };
-      const render = () => {
-        if (frames.length) {
-          const img = frames[Math.min(frames.length - 1, Math.round(state.p * (frames.length - 1)))];
-          // A frame that failed to load is also "complete" but has no size; skip it.
-          if (img.complete && img.naturalWidth > 0) {
-            ctx.clearRect(0, 0, el.width, el.height);
-            // The source video is only 480p; smooth scaling hides the blockiness a little.
-            ctx.imageSmoothingQuality = "high";
-            const scale = Math.max(el.width / img.width, el.height / img.height);
-            const iw = img.width * scale;
-            const ih = img.height * scale;
-            ctx.drawImage(img, (el.width - iw) / 2, (el.height - ih) / 2, iw, ih);
-          }
-        } else {
-          drawPollera(ctx, el.width, el.height, state.p);
-        }
-        // The pollera also spins open in the corner, over the video.
-        if (skirtEl && skirtCtx) drawPollera(skirtCtx, skirtEl.width, skirtEl.height, state.p);
-      };
+      const render = () => drawPollera(skirtCtx, skirtEl.width, skirtEl.height, state.p);
 
       size();
       render();
@@ -139,7 +113,11 @@ export function Hero() {
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        // Scroll scrubs the sequence while the hero stays pinned (sticky container).
+        // Plays once (no loop) and rests on its last frame: movement on arrival,
+        // then calm, and no more data used. Reduced motion keeps the poster.
+        vid.play().catch(() => {});
+
+        // Scroll opens the corner skirt while the hero stays pinned (sticky container).
         // fromTo (not to) so the scrub always starts closed, even after the
         // reduced-motion branch below has set p = 1.
         gsap.fromTo(state, { p: 0 }, {
@@ -173,7 +151,13 @@ export function Hero() {
         };
       });
 
-      return () => window.removeEventListener("resize", onResize);
+      return () => {
+        window.removeEventListener("resize", onResize);
+        vid.removeEventListener("progress", onProgress);
+        vid.removeEventListener("canplaythrough", hideLoader);
+        vid.removeEventListener("error", hideLoader);
+        window.clearTimeout(fallback);
+      };
     },
     { scope: root },
   );
@@ -197,13 +181,22 @@ export function Hero() {
         </p>
       </div>
       <div className="sticky top-0 h-svh overflow-hidden">
-        <canvas ref={canvas} className="absolute inset-0 h-full w-full" aria-hidden="true" />
+        <video
+          ref={video}
+          className="absolute inset-0 h-full w-full object-cover"
+          src={withBase(heroVideo.src)}
+          poster={withBase(heroVideo.poster)}
+          muted
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+        />
         <canvas
           ref={skirt}
           className="absolute right-[4%] top-[12%] aspect-square w-[40vw] md:w-[24vw]"
           aria-hidden="true"
         />
-        {/* Video frames are busy and dark at the bottom; shade them so the headline stays readable. */}
+        {/* The video is busy and dark at the bottom; shade it so the headline stays readable. */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
 
         <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48">

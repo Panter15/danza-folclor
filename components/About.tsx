@@ -7,23 +7,40 @@ import { photoLayer, withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
 /**
- * Random photo layout that still covers the whole width: the screen is split
- * into lanes, and every row of `lanes` photos uses each lane once, in a new
- * random order. Widths and speeds are random within a range.
- * Returns left/width in % of the stage, speed as a multiplier (faster = closer).
+ * Random photo layout that still covers the whole width and never stacks one
+ * photo on another: the screen is split into lanes, every row of `lanes` photos
+ * uses each lane once in a new random order, and each photo starts a random gap
+ * below the previous one in its lane. Widths are random within a range.
+ * Returns left/width in % of the stage and top in vw (photos are 3:4, so a
+ * photo's height is width × 4/3 in the same unit). `height` is the tallest lane.
  */
 export function layoutPhotos(count: number, lanes: number, minW: number, maxW: number, rand = Math.random) {
   const laneW = 100 / lanes;
-  const spots: { left: number; width: number; speed: number }[] = [];
+  const bottoms = new Array<number>(lanes).fill(0);
+  const spots: { left: number; width: number; top: number }[] = [];
   for (let row = 0; row * lanes < count; row++) {
     const order = Array.from({ length: lanes }, (_, i) => i).sort(() => rand() - 0.5);
     for (const lane of order) {
       if (spots.length === count) break;
       const width = Math.min(laneW, minW + rand() * (maxW - minW));
-      spots.push({ left: lane * laneW + rand() * (laneW - width), width, speed: 0.8 + rand() * 0.9 });
+      const top = bottoms[lane] + (row === 0 ? rand() * 30 : 4 + rand() * 12);
+      spots.push({ left: lane * laneW + rand() * (laneW - width), width, top });
+      bottoms[lane] = top + (width * 4) / 3;
     }
   }
-  return spots;
+  return { spots, height: Math.max(...bottoms) };
+}
+
+// Self-check: photos sharing a lane never overlap vertically.
+if (process.env.NODE_ENV !== "production") {
+  const { spots } = layoutPhotos(12, 4, 16, 24);
+  spots.forEach((a, i) =>
+    spots.slice(i + 1).forEach((b) => {
+      const sameLane = a.left < b.left + b.width && b.left < a.left + a.width;
+      const apart = a.top + (a.width * 4) / 3 <= b.top || b.top + (b.width * 4) / 3 <= a.top;
+      console.assert(!sameLane || apart, "layoutPhotos: overlapping photos", a, b);
+    }),
+  );
 }
 
 // Photos the lightbox can browse, in page order.
@@ -59,32 +76,32 @@ export function About() {
         if (!ctx.conditions?.motion) return;
         const photos = gsap.utils.shuffle(gsap.utils.toArray<HTMLElement>(".fly-photo"));
         // Phones: one lane of big photos. Desktop: four lanes across the whole width.
-        const spots = ctx.conditions.phone
+        const { spots, height } = ctx.conditions.phone
           ? layoutPhotos(photos.length, 1, 58, 80)
           : layoutPhotos(photos.length, 4, 16, 24);
-        photos.forEach((photo, i) => gsap.set(photo, { left: `${spots[i].left}%`, width: `${spots[i].width}%` }));
+        photos.forEach((photo, i) =>
+          gsap.set(photo, { left: `${spots[i].left}%`, width: `${spots[i].width}%`, top: `${spots[i].top}vw` }),
+        );
 
-        // Each photo rises from below the screen to above it while the headline
-        // stays pinned. Different speeds and start offsets give depth.
-        const flight = gsap.timeline({
-          scrollTrigger: {
-            trigger: ".fly-stage",
-            start: "top top",
-            end: "bottom bottom",
-            scrub: 0.8,
-            // Recalculate the window-height-based distances on resize / rotation.
-            invalidateOnRefresh: true,
+        // All photos ride one track that rises from below the screen to above it
+        // while the headline stays pinned. Same speed for all, so none catches up
+        // with and covers another.
+        gsap.fromTo(
+          ".fly-track",
+          { y: () => window.innerHeight },
+          {
+            y: () => -(height * window.innerWidth) / 100,
+            ease: "none",
+            scrollTrigger: {
+              trigger: ".fly-stage",
+              start: "top top",
+              end: "bottom bottom",
+              scrub: 0.8,
+              // Recalculate the window-size-based distances on resize / rotation.
+              invalidateOnRefresh: true,
+            },
           },
-        });
-        photos.forEach((photo, i) => {
-          const { speed } = spots[i];
-          flight.fromTo(
-            photo,
-            { yPercent: 0, y: () => window.innerHeight * 1.1, scale: 0.85 },
-            { y: () => -window.innerHeight * 1.2 * speed, scale: 1.05, ease: "none", duration: 1 },
-            i * 0.12,
-          );
-        });
+        );
 
         gsap.from(".fly-headline-inner", {
           yPercent: 110,
@@ -126,23 +143,24 @@ export function About() {
       <div className="fly-stage relative h-[350svh] motion-reduce:h-auto">
         {/* bg-paper matters: the headline blends (difference) against this layer's own background. */}
         <div className="sticky top-0 h-svh overflow-hidden bg-paper motion-reduce:static motion-reduce:h-auto motion-reduce:py-28">
-          {flyingImages.map((img, i) => (
-            // left/width are set by the random layout above.
-            <button
-              key={i}
-              type="button"
-              onClick={() => img.photo && setViewing(gallery.indexOf(img.photo))}
-              aria-label={`${t("viewPhoto")} ${i + 1}`}
-              className="fly-photo absolute top-0 aspect-[3/4] w-1/4 cursor-zoom-in overflow-hidden motion-reduce:hidden"
-              style={{ transform: "translateY(110vh)" }}
-            >
-              {/* Inner layer zooms on hover; the outer one is moved by GSAP. */}
-              <span
-                className="block h-full w-full transition-transform duration-700 ease-out hover:scale-110"
-                style={{ background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})` }}
-              />
-            </button>
-          ))}
+          <div className="fly-track absolute inset-x-0 top-0 motion-reduce:hidden" style={{ transform: "translateY(110vh)" }}>
+            {flyingImages.map((img, i) => (
+              // left/width/top are set by the random layout above.
+              <button
+                key={i}
+                type="button"
+                onClick={() => img.photo && setViewing(gallery.indexOf(img.photo))}
+                aria-label={`${t("viewPhoto")} ${i + 1}`}
+                className="fly-photo absolute top-0 aspect-[3/4] w-1/4 cursor-zoom-in overflow-hidden"
+              >
+                {/* Inner layer zooms on hover, clipped by the button so it never spills onto a neighbour. */}
+                <span
+                  className="block h-full w-full transition-transform duration-700 ease-out hover:scale-110"
+                  style={{ background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})` }}
+                />
+              </button>
+            ))}
+          </div>
 
           <div className="pointer-events-none relative z-10 flex h-full flex-col items-center justify-center px-4 text-center text-white mix-blend-difference motion-reduce:text-ink motion-reduce:mix-blend-normal">
             <p className="label mb-6">{t("aboutTitle")}</p>
