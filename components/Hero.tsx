@@ -118,7 +118,7 @@ export function Hero() {
   const align = (i: number) => (i === 0 ? "text-left" : i === lines.length - 1 ? "text-right" : "text-center");
 
   return (
-    <section ref={root} id="top" className="relative h-svh overflow-hidden bg-paper">
+    <section ref={root} id="top" className="relative h-svh overflow-hidden bg-paper portrait:bg-ink">
       <div
         ref={loader}
         className="fixed inset-0 z-[60] flex flex-col items-center justify-center gap-6 bg-paper text-ink"
@@ -134,30 +134,28 @@ export function Hero() {
           {t("loading")} <span ref={loaderPct}>0%</span>
         </p>
       </div>
-      {/* Screens held upright (phones): zooming the wide clips to fill the height
-          cut most dancers off, so the whole frame is shown, a bit above centre,
-          over a blurred still of the performance. */}
-      <div
-        className="absolute inset-0 hidden scale-110 bg-cover bg-center blur-2xl portrait:block"
-        style={{ backgroundImage: `url("${withBase(heroVideo.poster)}")` }}
-        aria-hidden="true"
-      />
+      {/* Screens held upright (phones) get their own video: three whole frames of the
+          montage stacked, each at a different moment, so the tall screen is full of
+          dancing and no dancer is cropped. It sits under the top bar, uncropped. The
+          browser picks one source, so each device downloads only one file. */}
       <video
         ref={video}
-        className="absolute inset-0 h-full w-full object-cover portrait:object-contain portrait:object-[center_38%]"
-        src={withBase(heroVideo.src)}
+        className="absolute inset-0 h-full w-full object-cover portrait:top-16 portrait:h-[calc(100%-4rem)] portrait:object-contain portrait:object-top"
         poster={withBase(heroVideo.poster)}
         muted
         loop
         playsInline
         preload="auto"
         aria-hidden="true"
-      />
+      >
+        <source src={withBase(heroVideo.src)} media="(orientation: landscape)" />
+        <source src={withBase(heroVideo.phoneSrc)} />
+      </video>
       {/* Some clips are bright (white walls, daylight); shade them so the headline stays readable. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" aria-hidden="true" />
 
       {/* Right padding keeps the last line clear of the scroll cue. */}
-      <div className="hero-copy absolute inset-x-0 bottom-0 pb-12 pl-4 pr-12 md:pl-8 md:pr-20 lg:pl-48" style={{ filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.55))" }}>
+      <div className="hero-copy absolute inset-x-0 bottom-0 pb-12 pl-4 portrait:pb-6 pr-12 md:pl-8 md:pr-20 lg:pl-48" style={{ filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.55))" }}>
         {/* Screen readers get the plain title; the letter spans are only for the animation. */}
         <h1 key={index} className="display text-[13vw] text-white md:text-[6.5vw]" aria-label={lines.join(" ")}>
           {lines.map((line, i) => (
