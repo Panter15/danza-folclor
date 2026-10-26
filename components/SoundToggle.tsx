@@ -8,50 +8,98 @@ import { useLanguage } from "./LanguageProvider";
 // "Caimán Cienaguero". Git-ignored until the group has permission to publish it.
 const SONG = "/music/caiman-cienaguero.mp3";
 const VOLUME = 0.35;
+const MUTED_KEY = "ancestros-muted";
 
-// Off until clicked: browsers block sound before a click anyway, and a site that
-// starts playing on its own is one of the quickest ways to make people leave.
+// Starts by itself: browsers block sound until the visitor interacts, so it tries
+// on load and otherwise starts on the first click, tap or key press. A visitor who
+// mutes it is remembered and not autoplayed again.
 export function SoundToggle() {
   const { t } = useLanguage();
   const audio = useRef<HTMLAudioElement>(null);
+  // Mirrors the audio element (its play/pause events), so the button is always truthful.
   const [on, setOn] = useState(false);
+  // What the visitor wants, kept apart from playback: hiding the tab pauses but doesn't mute.
+  const wanted = useRef(false);
 
-  // Silence while the tab is in the background.
-  useEffect(() => {
-    const onVisibility = () => {
-      const el = audio.current;
-      if (!el || !on) return;
-      if (document.hidden) el.pause();
-      else el.play().catch(() => setOn(false));
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-    return () => document.removeEventListener("visibilitychange", onVisibility);
-  }, [on]);
-
-  async function toggle() {
+  async function start() {
     const el = audio.current;
-    if (!el) return;
+    if (!el) return false;
+    wanted.current = true;
     gsap.killTweensOf(el);
-    if (on) {
-      // Fade out instead of cutting the song off.
-      gsap.to(el, { volume: 0, duration: 1, onComplete: () => el.pause() });
-      setOn(false);
-      return;
-    }
     el.volume = 0;
     try {
       await el.play();
     } catch {
-      return; // missing file or blocked: stay off
+      return false; // blocked until the visitor interacts, or the file is missing
     }
     gsap.to(el, { volume: VOLUME, duration: 2 });
-    setOn(true);
+    return true;
+  }
+
+  function stop() {
+    const el = audio.current;
+    if (!el) return;
+    wanted.current = false;
+    gsap.killTweensOf(el);
+    // Fade out instead of cutting the song off.
+    gsap.to(el, { volume: 0, duration: 1, onComplete: () => el.pause() });
+  }
+
+  useEffect(() => {
+    let muted = false;
+    try {
+      muted = localStorage.getItem(MUTED_KEY) === "1";
+    } catch {}
+    if (muted) return;
+
+    const events = ["pointerdown", "keydown", "touchend"] as const;
+    const onFirstInteraction = () => {
+      events.forEach((e) => window.removeEventListener(e, onFirstInteraction, true));
+      // Skip if the visitor's first click was the Música button itself (it handles that).
+      if (wanted.current || !audio.current?.paused) return;
+      start();
+    };
+    start().then((ok) => {
+      if (!ok) {
+        wanted.current = false;
+        events.forEach((e) => window.addEventListener(e, onFirstInteraction, { capture: true }));
+      }
+    });
+    return () => events.forEach((e) => window.removeEventListener(e, onFirstInteraction, true));
+  }, []);
+
+  // Silence while the tab is in the background, resume when it comes back.
+  useEffect(() => {
+    const onVisibility = () => {
+      const el = audio.current;
+      if (!el || !wanted.current) return;
+      if (document.hidden) el.pause();
+      else el.play().catch(() => {});
+    };
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => document.removeEventListener("visibilitychange", onVisibility);
+  }, []);
+
+  function toggle() {
+    const mute = wanted.current;
+    try {
+      localStorage.setItem(MUTED_KEY, mute ? "1" : "0");
+    } catch {}
+    if (mute) stop();
+    else start();
   }
 
   return (
     <>
-      {/* preload="none": the song only downloads once someone asks for it. */}
-      <audio ref={audio} src={withBase(SONG)} loop preload="none" />
+      {/* preload="auto" so it is ready to start on the first interaction. */}
+      <audio
+        ref={audio}
+        src={withBase(SONG)}
+        loop
+        preload="auto"
+        onPlay={() => setOn(true)}
+        onPause={() => setOn(false)}
+      />
       <button
         type="button"
         onClick={toggle}
