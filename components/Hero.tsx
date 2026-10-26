@@ -43,7 +43,17 @@ export function Hero() {
       vid.addEventListener("canplaythrough", hideLoader);
       vid.addEventListener("error", hideLoader);
       const fallback = window.setTimeout(hideLoader, 6000);
-      if (vid.readyState >= 4) hideLoader();
+
+      // Upright screens get the stacked phone video, others the wide one. Chosen here
+      // (not with <source media>, which browsers check only once on load) so it also
+      // switches when a phone is rotated or a window is resized.
+      const upright = window.matchMedia("(orientation: portrait)");
+      const pickSource = () => {
+        const src = withBase(upright.matches ? heroVideo.phoneSrc : heroVideo.src);
+        if (vid.getAttribute("src") !== src) vid.src = src;
+      };
+      pickSource();
+      upright.addEventListener("change", pickSource);
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -60,6 +70,8 @@ export function Hero() {
         });
         observer.observe(vid);
         document.addEventListener("visibilitychange", update);
+        // A new source (after rotating) loads paused; carry on playing if in view.
+        vid.addEventListener("loadeddata", update);
 
         // Headline fades out as the page scrolls away.
         gsap.to(".hero-copy", {
@@ -78,6 +90,7 @@ export function Hero() {
         return () => {
           observer.disconnect();
           document.removeEventListener("visibilitychange", update);
+          vid.removeEventListener("loadeddata", update);
           vid.pause();
         };
       });
@@ -86,6 +99,7 @@ export function Hero() {
         vid.removeEventListener("progress", onProgress);
         vid.removeEventListener("canplaythrough", hideLoader);
         vid.removeEventListener("error", hideLoader);
+        upright.removeEventListener("change", pickSource);
         window.clearTimeout(fallback);
       };
     },
@@ -137,7 +151,7 @@ export function Hero() {
       {/* Screens held upright (phones) get their own video: three whole frames of the
           montage stacked, each at a different moment, so the tall screen is full of
           dancing and no dancer is cropped. It sits under the top bar, uncropped. The
-          browser picks one source, so each device downloads only one file. */}
+          source is set in the effect above, so each device downloads only one file. */}
       <video
         ref={video}
         className="absolute inset-0 h-full w-full object-cover portrait:top-16 portrait:h-[calc(100%-4rem)] portrait:object-contain portrait:object-top"
@@ -147,10 +161,7 @@ export function Hero() {
         playsInline
         preload="auto"
         aria-hidden="true"
-      >
-        <source src={withBase(heroVideo.src)} media="(orientation: landscape)" />
-        <source src={withBase(heroVideo.phoneSrc)} />
-      </video>
+      />
       {/* Some clips are bright (white walls, daylight); shade them so the headline stays readable. */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" aria-hidden="true" />
 
