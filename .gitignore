@@ -43,3 +43,7 @@ next-env.d.ts
 # Reference recording: rights not cleared yet. Remove this line only once the
 # group has permission to publish it (or replace it with their own recording).
 /public/music/caiman-cienaguero.mp3
+
+# Playwright
+/test-results/
+/playwright-report/

@@ -146,11 +146,13 @@ export const sections = [
 // from 2026-10-17, in this order: 16.34.33 @157.5 s, 16.34.29 @89 s, 16.33.24 @113 s,
 // 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It loops only while the hero is on screen.
 // phoneSrc: the same montage for upright screens, 540x934, three whole frames stacked,
-// each a third of the loop apart (~2.3 MB).
+// each a third of the loop apart (~2.3 MB). Posters are the stills shown before
+// playback and, with reduced motion, instead of the video.
 export const heroVideo = {
   src: "/hero/hero.webm",
   phoneSrc: "/hero/hero-phone.webm",
   poster: "/hero/hero-poster.webp",
+  phonePoster: "/hero/hero-phone-poster.webp",
 };
 
 // Hero headlines, shown in turn over the video, all white; the `sway` word keeps

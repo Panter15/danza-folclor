@@ -91,7 +91,7 @@ export function Tours() {
                 <div className="relative h-[44svh] overflow-hidden">
                   <div
                     className="tour-media absolute -inset-x-[15%] inset-y-0"
-                    style={{ background: `${photoLayer(tour.photo)}linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
+                    style={{ background: photoLayer(tour.photo, `linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})`) }}
                     aria-hidden="true"
                   />
                 </div>

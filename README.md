@@ -9,6 +9,7 @@ Next.js (static export) + Tailwind + GSAP/ScrollTrigger + Lenis.
 npm install
 npm run dev     # http://localhost:3000
 npm run lint
+npm test        # browser tests for the music button (uses your installed Chrome)
 ```
 
 ## Where things live

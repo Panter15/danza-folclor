@@ -48,12 +48,24 @@ export function Hero() {
       // (not with <source media>, which browsers check only once on load) so it also
       // switches when a phone is rotated or a window is resized.
       const upright = window.matchMedia("(orientation: portrait)");
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)");
       const pickSource = () => {
+        vid.poster = withBase(upright.matches ? heroVideo.phonePoster : heroVideo.poster);
+        // Reduce motion: only the still picture, so don't download a video that never plays.
+        if (still.matches) {
+          if (vid.hasAttribute("src")) {
+            vid.removeAttribute("src");
+            vid.load();
+          }
+          hideLoader();
+          return;
+        }
         const src = withBase(upright.matches ? heroVideo.phoneSrc : heroVideo.src);
         if (vid.getAttribute("src") !== src) vid.src = src;
       };
       pickSource();
       upright.addEventListener("change", pickSource);
+      still.addEventListener("change", pickSource);
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -100,6 +112,7 @@ export function Hero() {
         vid.removeEventListener("canplaythrough", hideLoader);
         vid.removeEventListener("error", hideLoader);
         upright.removeEventListener("change", pickSource);
+        still.removeEventListener("change", pickSource);
         window.clearTimeout(fallback);
       };
     },
@@ -114,13 +127,20 @@ export function Hero() {
       mm.add("(prefers-reduced-motion: no-preference)", () => {
         const chars = gsap.utils.toArray<HTMLElement>(".hero-char");
         const tilt = () => gsap.utils.random(-30, 30);
+        // Pause while the hero is off screen, carry on when it comes back (like the video).
+        const whileVisible = () => ({
+          trigger: root.current,
+          start: "top bottom",
+          end: "bottom top",
+          toggleActions: "play pause resume pause",
+        });
         gsap
-          .timeline({ onComplete: () => setIndex((i) => (i + 1) % heroTitles.length) })
+          .timeline({ scrollTrigger: whileVisible(), onComplete: () => setIndex((i) => (i + 1) % heroTitles.length) })
           .from(chars, { yPercent: -120, rotate: tilt, opacity: 0, duration: 0.8, ease: "back.out(2.2)", stagger: 0.035 })
           .to(chars, { yPercent: 120, rotate: tilt, opacity: 0, duration: 0.5, ease: "power2.in", stagger: 0.02 }, `+=${TITLE_HOLD}`)
           .to({}, { duration: VIDEO_ONLY });
         // One word sways gently, like a skirt, while the title is up.
-        gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%" });
+        gsap.fromTo(".hero-sway", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%", scrollTrigger: whileVisible() });
       });
     },
     { scope: root, dependencies: [index, lang], revertOnUpdate: true },
