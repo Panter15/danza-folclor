@@ -12,6 +12,7 @@
   --color-accent: #ff5c02;
   --font-sans: var(--font-inter-tight), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-script: var(--font-kaushan), cursive;
 }
 
 @keyframes fade-in {
@@ -28,12 +29,31 @@ body {
   overflow-x: hidden;
 }
 
-/* Big headlines: tight tracking like Cntrl / Art of Documentary. */
+/* Big headlines in the brush script; it has one weight and needs its natural spacing. */
 .display {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+/* The long "about" paragraph keeps the old headline look in the readable grotesk. */
+.about-body {
   font-family: var(--font-sans);
   font-weight: 500;
   letter-spacing: -0.045em;
-  line-height: 0.92;
+}
+
+/* Top bar: the zigzag band from the group's CV, redrawn minimal and kept faint
+   behind the name and buttons (z-index -1 stays inside the bar's stacking context). */
+.nav-pattern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.12;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='60' viewBox='0 0 80 60'%3E%3Cg fill='none' stroke-linejoin='miter'%3E%3Cpath d='M0 24 20 42 40 24 60 42 80 24' stroke='%23E3001B' stroke-width='2'/%3E%3Cpath d='M0 32 20 50 40 32 60 50 80 32' stroke='%23FFC20E' stroke-width='4'/%3E%3C/g%3E%3Cg fill='%235E0B26'%3E%3Cpath d='M20 10 25 17 20 24 15 17Z'/%3E%3Cpath d='M60 10 65 17 60 24 55 17Z'/%3E%3C/g%3E%3Cg fill='%23FFC20E'%3E%3Ccircle cx='0' cy='10' r='2.5'/%3E%3Ccircle cx='40' cy='10' r='2.5'/%3E%3Ccircle cx='80' cy='10' r='2.5'/%3E%3C/g%3E%3C/svg%3E")
+    left center / auto 100% repeat-x;
 }
 
 /* Small uppercase monospace labels. */
@@ -62,6 +82,20 @@ body {
 }
 @media (prefers-reduced-motion: reduce) {
   .scroll-cue-dot { animation: none; }
+}
+
+/* Music button: the bars bounce while sound is on. */
+.sound-bar {
+  height: 100%;
+  transform-origin: bottom;
+  animation: sound-bar 0.9s ease-in-out infinite alternate;
+}
+@keyframes sound-bar {
+  from { transform: scaleY(0.3); }
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sound-bar { animation: none; }
 }
 
 /* Lenis smooth scrolling (recommended base styles). */

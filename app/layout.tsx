@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono, Inter_Tight } from "next/font/google";
+import { Geist_Mono, Inter_Tight, Kaushan_Script } from "next/font/google";
 import { group } from "@/content/site";
 import "./globals.css";
 
@@ -14,6 +14,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Brush script for titles: the group asked for something less rigid and more artistic.
+const kaushan = Kaushan_Script({
+  variable: "--font-kaushan",
+  weight: "400",
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: `${group.name} — Danza folclórica colombiana`,
   description:
@@ -24,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${interTight.variable} ${geistMono.variable} antialiased`}
+      className={`${interTight.variable} ${geistMono.variable} ${kaushan.variable} antialiased`}
     >
       <body>{children}</body>
     </html>

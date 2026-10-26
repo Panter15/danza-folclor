@@ -15,8 +15,9 @@ export type Performance = {
 
 export type Tour = {
   year: string;
-  city: string;
-  country: Localized;
+  // Unknown city: the card shows the event name as its title instead.
+  city?: string;
+  country?: Localized;
   event: Localized;
   palette: [string, string];
   photo?: string;
@@ -76,6 +77,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     whatsappMessage: "Hola, quisiera información sobre una presentación del grupo.",
     footerRights: "Todos los derechos reservados.",
     loading: "Cargando",
+    music: "Música",
     viewPhoto: "Ver foto",
     photoAlt: "Foto de la Fundación Ancestros",
     close: "Cerrar",
@@ -127,6 +129,7 @@ export const ui: Record<Lang, Record<string, string>> = {
     whatsappMessage: "Hello, I would like information about booking the group.",
     footerRights: "All rights reserved.",
     loading: "Loading",
+    music: "Music",
     viewPhoto: "View photo",
     photoAlt: "Photo of the Ancestros Foundation",
     close: "Close",
@@ -145,13 +148,9 @@ export const sections = [
   { id: "contacto", labelKey: "navContact" },
 ] as const;
 
-// Hero scroll sequence: 100 frames (5 s) of a cumbia performance, exported from
-// a WhatsApp video to public/sequence/0001-0100.webp. Empty it to fall back to
-// the animated pollera drawing.
-export const heroSequence: string[] = Array.from(
-  { length: 100 },
-  (_, i) => `/sequence/${String(i + 1).padStart(4, "0")}.webp`,
-);
+// Hero clip: 10 silent seconds (157.5–167.5 s) of a cumbia performance from the
+// group's WhatsApp video, re-encoded to WebM (~2 MB). It plays once and stops.
+export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
 
 // Photos that fly past the history headline.
 export const flyingImages: { palette: [string, string]; photo?: string }[] = [
@@ -288,15 +287,15 @@ export const performances: Performance[] = [
   },
 ];
 
-// From the CV's festival list. Only Barranquilla has a photo known to be from that event.
+// From the CV's festival list plus the 2024–2026 events and photos sent by the group (Oct 2026).
 export const tours: Tour[] = [
   {
-    year: "2023 – 2024",
+    year: "2023 – 2024, 2026",
     city: "Barranquilla",
     country: { es: "Colombia", en: "Colombia" },
     event: { es: "Carnaval de Barranquilla", en: "Barranquilla Carnival" },
     palette: ["#F2C230", "#C8102E"],
-    photo: "/photos/19.jpeg",
+    photo: "/photos/giras/carnaval-barranquilla-2026.jpg",
   },
   {
     year: "2024",
@@ -306,18 +305,20 @@ export const tours: Tour[] = [
     palette: ["#1F3A93", "#C8102E"],
   },
   {
-    year: "2015 – 2024",
+    year: "2015 – 2024, 2026",
     city: "Ciénaga",
     country: { es: "Magdalena, Colombia", en: "Magdalena, Colombia" },
     event: { es: "Festival Nacional del Caimán Cienaguero", en: "Caimán Cienaguero National Festival" },
     palette: ["#2E7D5B", "#F2C230"],
+    photo: "/photos/giras/caiman-2026.jpg",
   },
   {
-    year: "2022 – 2023",
+    year: "2022 – 2023, 2026",
     city: "Santa Marta",
     country: { es: "Magdalena, Colombia", en: "Magdalena, Colombia" },
     event: { es: "Fiestas del Mar", en: "Fiestas del Mar (Sea Festival)" },
     palette: ["#7FC8D8", "#1F3A93"],
+    photo: "/photos/giras/fiestas-del-mar-2026.jpg",
   },
   {
     year: "2024",
@@ -332,6 +333,56 @@ export const tours: Tour[] = [
     country: { es: "Cundinamarca, Colombia", en: "Cundinamarca, Colombia" },
     event: { es: "Festival Nacional de la Colombianidad", en: "National Festival of Colombianness" },
     palette: ["#C8102E", "#F7D6E0"],
+  },
+  {
+    year: "2026",
+    city: "Barranquilla",
+    country: { es: "Atlántico, Colombia", en: "Atlántico, Colombia" },
+    event: { es: "Carnaval del Río, Malecón de Barranquilla", en: "River Carnival, Barranquilla Malecón" },
+    palette: ["#7FC8D8", "#F2C230"],
+    photo: "/photos/giras/carnaval-del-rio-2026.jpg",
+  },
+  {
+    year: "2026",
+    city: "Galapa",
+    country: { es: "Atlántico, Colombia", en: "Atlántico, Colombia" },
+    event: { es: "Carnaval del Atlántico", en: "Atlántico Carnival" },
+    palette: ["#C8102E", "#F2C230"],
+    photo: "/photos/giras/galapa-2026.jpg",
+  },
+  {
+    year: "2026",
+    city: "Candelaria",
+    country: { es: "Atlántico, Colombia", en: "Atlántico, Colombia" },
+    event: { es: "Festival Nacional de la Alegría", en: "National Festival of Joy" },
+    palette: ["#2E7D5B", "#C8102E"],
+    photo: "/photos/giras/alegria-candelaria-2026.jpg",
+  },
+  {
+    year: "2026",
+    event: { es: "Día Internacional de la Danza", en: "International Dance Day" },
+    palette: ["#F2C230", "#2E7D5B"],
+    photo: "/photos/giras/dia-danza-2026.jpg",
+  },
+  {
+    year: "2025",
+    event: { es: "Festival Nacional de Danzas Folclóricas Costumbristas", en: "National Festival of Traditional Folk Dances" },
+    palette: ["#F2C230", "#E2733B"],
+    photo: "/photos/giras/costumbristas-2025.jpg",
+  },
+  {
+    year: "2025",
+    event: { es: "Conmemoración de la Masacre de las Bananeras", en: "Commemoration of the Banana Massacre" },
+    palette: ["#5A1E0E", "#F2C230"],
+    photo: "/photos/giras/bananeras-2025.jpg",
+  },
+  {
+    year: "2024",
+    city: "Corozal",
+    country: { es: "Sucre, Colombia", en: "Sucre, Colombia" },
+    event: { es: "Festival Nacional de Danza Flor María", en: "Flor María National Dance Festival" },
+    palette: ["#E2733B", "#F7D6E0"],
+    photo: "/photos/giras/flor-maria-2024.jpg",
   },
 ];
 
