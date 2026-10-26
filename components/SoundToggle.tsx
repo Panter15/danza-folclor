@@ -54,13 +54,18 @@ export function SoundToggle() {
     if (muted) return;
 
     const events = ["pointerdown", "keydown", "touchend"] as const;
+    const stopListening = () => events.forEach((name) => window.removeEventListener(name, onFirstInteraction, true));
     const onFirstInteraction = (e: Event) => {
-      events.forEach((name) => window.removeEventListener(name, onFirstInteraction, true));
       // A first click on the Música button is left to the button; starting here too
-      // would make its click see "on" and mute it straight away.
-      if ((e.target as Element | null)?.closest?.("[data-music-toggle]")) return;
-      if (wanted.current || !audio.current?.paused) return;
-      start();
+      // would make its click see "on" and mute it straight away. A missing song: give up.
+      if ((e.target as Element | null)?.closest?.("[data-music-toggle]") || audio.current?.error) return stopListening();
+      if (wanted.current || !audio.current?.paused) return stopListening();
+      // Keep listening until it really starts: a scroll swipe on a phone is an
+      // interaction too, but browsers don't count it as permission for sound.
+      start().then((ok) => {
+        if (ok) stopListening();
+        else wanted.current = false;
+      });
     };
     start().then((ok) => {
       if (!ok) {
