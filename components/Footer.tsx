@@ -34,10 +34,6 @@ export function Footer() {
           Facebook
         </a>
       </div>
-      {/* Oversized name, inspired by the Victor Córdon and Cntrl footers. */}
-      <p className="display mt-10 text-[11vw]" aria-hidden="true">
-        {group.name}
-      </p>
     </footer>
   );
 }
