@@ -6,8 +6,17 @@ import { tours } from "@/content/site";
 import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
-// Only tours with a real photo are shown; the others stay in site.ts and appear once a photo is added.
-const shown = tours.filter((tour) => tour.photo);
+// Latest year a tour mentions: "2023 – 2024, 2026" → 2026.
+const latestYear = (year: string) => Math.max(...(year.match(/\d{4}/g) ?? ["0"]).map(Number));
+
+// Only tours with a real photo are shown (the others stay in site.ts and appear once a
+// photo is added), newest first. Same year keeps the order in site.ts.
+const shown = tours.filter((tour) => tour.photo).sort((a, b) => latestYear(b.year) - latestYear(a.year));
+
+// Self-check: ranges and lists resolve to their last year.
+if (process.env.NODE_ENV !== "production") {
+  console.assert(latestYear("2023 – 2024, 2026") === 2026 && latestYear("2015 – 2024") === 2024, "latestYear");
+}
 
 export function Tours() {
   const { lang, t } = useLanguage();
