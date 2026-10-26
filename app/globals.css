@@ -12,6 +12,7 @@
   --color-accent: #ff5c02;
   --font-sans: var(--font-inter-tight), system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --font-script: var(--font-kaushan), cursive;
 }
 
 @keyframes fade-in {
@@ -28,12 +29,18 @@ body {
   overflow-x: hidden;
 }
 
-/* Big headlines: tight tracking like Cntrl / Art of Documentary. */
+/* Big headlines in the brush script; it has one weight and needs its natural spacing. */
 .display {
+  font-family: var(--font-script);
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+/* The long "about" paragraph keeps the old headline look in the readable grotesk. */
+.about-body {
   font-family: var(--font-sans);
   font-weight: 500;
   letter-spacing: -0.045em;
-  line-height: 0.92;
 }
 
 /* Small uppercase monospace labels. */
