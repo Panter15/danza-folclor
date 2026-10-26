@@ -148,8 +148,9 @@ export const sections = [
   { id: "contacto", labelKey: "navContact" },
 ] as const;
 
-// Hero clip: 10 silent seconds (157.5–167.5 s) of a cumbia performance from the
-// group's WhatsApp video, re-encoded to WebM (~2 MB). It plays once and stops.
+// Hero clip: a 17 s silent montage (WebM, ~2.3 MB) of the group's five WhatsApp videos
+// from 2026-10-17, in this order: 16.34.33 @157.5 s, 16.34.29 @89 s, 16.33.24 @113 s,
+// 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It plays once and rests on the last frame.
 export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
 
 // Photos that fly past the history headline.
