@@ -1,13 +1,17 @@
 "use client";
 
-import { useRef } from "react";
+import { Fragment, useRef, useState } from "react";
 import { gsap, useGSAP } from "@/lib/gsap";
-import { group, heroVideo } from "@/content/site";
+import { group, heroTitles, heroVideo } from "@/content/site";
 import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
+const TITLE_HOLD = 5; // seconds a title stays readable
+const VIDEO_ONLY = 1.5; // seconds of video alone between titles
+
 export function Hero() {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const [index, setIndex] = useState(0);
   const root = useRef<HTMLElement>(null);
   const video = useRef<HTMLVideoElement>(null);
   const loader = useRef<HTMLDivElement>(null);
@@ -57,8 +61,7 @@ export function Hero() {
         observer.observe(vid);
         document.addEventListener("visibilitychange", update);
 
-        // Headline slides up on load, then fades out as the page scrolls away.
-        gsap.from(".hero-line-inner", { yPercent: 110, duration: 1.2, ease: "power4.out", stagger: 0.1, delay: 0.2 });
+        // Headline fades out as the page scrolls away.
         gsap.to(".hero-copy", {
           opacity: 0,
           y: -40,
@@ -89,7 +92,29 @@ export function Hero() {
     { scope: root },
   );
 
-  const lines = [t("heroLine1"), t("heroLine2"), t("heroLine3")];
+  // Titles take turns: letters dance in, the title holds, flies out, then a moment of
+  // video alone before the next one. Rebuilt for each title and on language change.
+  useGSAP(
+    () => {
+      const mm = gsap.matchMedia();
+      mm.add("(prefers-reduced-motion: no-preference)", () => {
+        const chars = gsap.utils.toArray<HTMLElement>(".hero-char");
+        const tilt = () => gsap.utils.random(-30, 30);
+        gsap
+          .timeline({ onComplete: () => setIndex((i) => (i + 1) % heroTitles.length) })
+          .from(chars, { yPercent: -120, rotate: tilt, opacity: 0, duration: 0.8, ease: "back.out(2.2)", stagger: 0.035 })
+          .to(chars, { yPercent: 120, rotate: tilt, opacity: 0, duration: 0.5, ease: "power2.in", stagger: 0.02 }, `+=${TITLE_HOLD}`)
+          .to({}, { duration: VIDEO_ONLY });
+        // The flag-coloured word sways gently, like a skirt, while the title is up.
+        gsap.fromTo(".hero-flag", { rotate: -3 }, { rotate: 3, duration: 1.4, ease: "sine.inOut", yoyo: true, repeat: -1, transformOrigin: "50% 100%" });
+      });
+    },
+    { scope: root, dependencies: [index, lang], revertOnUpdate: true },
+  );
+
+  const title = heroTitles[index];
+  const wordClass = (word: string) =>
+    word === title.yellow[lang] ? "text-[#FFC20E]" : word === title.flag[lang] ? "hero-flag" : "";
 
   return (
     <section ref={root} id="top" className="relative h-svh overflow-hidden bg-paper">
@@ -119,16 +144,26 @@ export function Hero() {
         preload="auto"
         aria-hidden="true"
       />
-      {/* The video is busy and dark at the bottom; shade it so the headline stays readable. */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" aria-hidden="true" />
+      {/* Some clips are bright (white walls, daylight); shade them so the headline stays readable. */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10" aria-hidden="true" />
 
-      <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48">
-        <h1 className="display text-[14vw] text-white md:text-[8vw]">
-          {lines.map((line, i) => (
-            <span key={i} className="block overflow-hidden pb-[0.08em]">
-              <span className="hero-line-inner block">
-                {line}
-              </span>
+      <div className="hero-copy absolute inset-x-0 bottom-0 px-4 pb-12 md:px-8 lg:pl-48" style={{ filter: "drop-shadow(0 4px 18px rgba(0,0,0,0.55))" }}>
+        {/* Screen readers get the plain title; the letter spans are only for the animation. */}
+        <h1 key={index} className="display text-[13vw] text-white md:text-[6.5vw]" aria-label={title.lines[lang].join(" ")}>
+          {title.lines[lang].map((line, i) => (
+            <span key={i} className="block" aria-hidden="true">
+              {line.split(" ").map((word, j) => (
+                <Fragment key={j}>
+                  {j > 0 && " "}
+                  <span className={`inline-block ${wordClass(word)}`}>
+                    {[...word].map((ch, k) => (
+                      <span key={k} className="hero-char inline-block">
+                        {ch}
+                      </span>
+                    ))}
+                  </span>
+                </Fragment>
+              ))}
             </span>
           ))}
         </h1>
