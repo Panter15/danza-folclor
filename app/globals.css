@@ -71,6 +71,20 @@ body {
   .scroll-cue-dot { animation: none; }
 }
 
+/* Music button: the bars bounce while sound is on. */
+.sound-bar {
+  height: 100%;
+  transform-origin: bottom;
+  animation: sound-bar 0.9s ease-in-out infinite alternate;
+}
+@keyframes sound-bar {
+  from { transform: scaleY(0.3); }
+  to { transform: scaleY(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sound-bar { animation: none; }
+}
+
 /* Lenis smooth scrolling (recommended base styles). */
 html.lenis,
 html.lenis body {
