@@ -41,9 +41,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     navPerformances: "Nuestro folclor",
     navTours: "Giras",
     navContact: "Contacto",
-    heroLine1: "Bailamos",
-    heroLine2: "la memoria",
-    heroLine3: "de Colombia",
     aboutTitle: "¿Quiénes somos?",
     aboutBody:
       "La Fundación Cultural y Social Ancestros, con domicilio en Ciénaga, Magdalena, fue creada el 26 de agosto de 2014. Es una entidad sin ánimo de lucro cuyo objeto social es la formación, práctica, circulación y desarrollo de las artes y la cultura, salvaguardando los saberes vernáculos del territorio.",
@@ -93,9 +90,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     navPerformances: "Our folklore",
     navTours: "Tours",
     navContact: "Contact",
-    heroLine1: "We dance",
-    heroLine2: "the memory",
-    heroLine3: "of Colombia",
     aboutTitle: "About us",
     aboutBody:
       "The Ancestros Cultural and Social Foundation, based in Ciénaga, Magdalena, was founded on 26 August 2014. It is a non-profit organisation whose purpose is the training, practice, circulation and development of the arts and culture, safeguarding the vernacular knowledge of the region.",
@@ -152,6 +146,28 @@ export const sections = [
 // from 2026-10-17, in this order: 16.34.33 @157.5 s, 16.34.29 @89 s, 16.33.24 @113 s,
 // 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It loops only while the hero is on screen.
 export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
+
+// Hero headlines, shown in turn over the video. In each, `yellow` is painted in the
+// CV's yellow and `flag` in the Colombian flag's stripes (and keeps swaying).
+// Wording from the site/CV: the original tagline, the About headline, the mission
+// (training artists) and the CV's "Región Caribe".
+export const heroTitles: { lines: Record<Lang, string[]>; yellow: Localized; flag: Localized }[] = [
+  {
+    lines: { es: ["Bailamos", "la memoria", "de Colombia"], en: ["We dance", "the memory", "of Colombia"] },
+    yellow: { es: "memoria", en: "memory" },
+    flag: { es: "Colombia", en: "Colombia" },
+  },
+  {
+    lines: { es: ["Desde 2014", "salvaguardando", "nuestro folclor"], en: ["Since 2014", "safeguarding", "our folklore"] },
+    yellow: { es: "2014", en: "2014" },
+    flag: { es: "folclor", en: "folklore" },
+  },
+  {
+    lines: { es: ["Formamos", "artistas", "del Caribe"], en: ["Training", "artists", "of the Caribbean"] },
+    yellow: { es: "artistas", en: "artists" },
+    flag: { es: "Caribe", en: "Caribbean" },
+  },
+];
 
 // Photos that fly past the history headline.
 export const flyingImages: { palette: [string, string]; photo?: string }[] = [
