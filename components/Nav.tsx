@@ -1,6 +1,7 @@
 "use client";
 
 import { group } from "@/content/site";
+import { withBase } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 import { SoundToggle } from "./SoundToggle";
 
@@ -17,9 +18,11 @@ export function Nav() {
 
   return (
     <header className="nav-pattern fixed inset-x-0 top-0 z-50 bg-paper/85 text-ink backdrop-blur-md">
-      <nav className="flex items-center justify-between px-4 py-4 md:px-8">
-        <a href="#top" className="display text-xl">
-          {group.name}
+      <nav className="flex items-center justify-between px-4 py-2 md:px-8">
+        <a href="#top">
+          {/* The group's logo, taken from its CV (hv ancestros.pdf). */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- static export, images are unoptimized anyway */}
+          <img src={withBase("/logo.webp")} alt={group.name} width={270} height={148} className="h-12 w-auto" />
         </a>
         {/* On large screens the side navigation takes over. */}
         <ul className="label hidden gap-6 md:flex lg:hidden">

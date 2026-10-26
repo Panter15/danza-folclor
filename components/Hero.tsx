@@ -172,7 +172,8 @@ export function Hero() {
         role="status"
         aria-live="polite"
       >
-        <p className="display text-3xl md:text-5xl">{group.name}</p>
+        {/* eslint-disable-next-line @next/next/no-img-element -- static export, images are unoptimized anyway */}
+        <img src={withBase("/logo.webp")} alt={group.name} width={270} height={148} className="h-28 w-auto md:h-36" />
         <div className="h-px w-56 bg-line md:w-80" aria-hidden="true">
           <div ref={loaderBar} className="h-full origin-left bg-accent" style={{ transform: "scaleX(0)" }} />
         </div>
