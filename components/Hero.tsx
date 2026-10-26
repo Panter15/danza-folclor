@@ -48,12 +48,24 @@ export function Hero() {
       // (not with <source media>, which browsers check only once on load) so it also
       // switches when a phone is rotated or a window is resized.
       const upright = window.matchMedia("(orientation: portrait)");
+      const still = window.matchMedia("(prefers-reduced-motion: reduce)");
       const pickSource = () => {
+        vid.poster = withBase(upright.matches ? heroVideo.phonePoster : heroVideo.poster);
+        // Reduce motion: only the still picture, so don't download a video that never plays.
+        if (still.matches) {
+          if (vid.hasAttribute("src")) {
+            vid.removeAttribute("src");
+            vid.load();
+          }
+          hideLoader();
+          return;
+        }
         const src = withBase(upright.matches ? heroVideo.phoneSrc : heroVideo.src);
         if (vid.getAttribute("src") !== src) vid.src = src;
       };
       pickSource();
       upright.addEventListener("change", pickSource);
+      still.addEventListener("change", pickSource);
 
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
@@ -100,6 +112,7 @@ export function Hero() {
         vid.removeEventListener("canplaythrough", hideLoader);
         vid.removeEventListener("error", hideLoader);
         upright.removeEventListener("change", pickSource);
+        still.removeEventListener("change", pickSource);
         window.clearTimeout(fallback);
       };
     },
