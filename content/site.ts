@@ -150,7 +150,7 @@ export const sections = [
 
 // Hero clip: a 17 s silent montage (WebM, ~2.3 MB) of the group's five WhatsApp videos
 // from 2026-10-17, in this order: 16.34.33 @157.5 s, 16.34.29 @89 s, 16.33.24 @113 s,
-// 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It plays once and rests on the last frame.
+// 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It loops only while the hero is on screen.
 export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
 
 // Photos that fly past the history headline.
