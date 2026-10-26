@@ -430,7 +430,27 @@ export const projects: Localized[] = [
 // Festival names are proper nouns, so one list serves both languages (hv ancestros.pdf, page 14).
 // Grouped by year, newest first. A festival spanning several years sits under its latest
 // one and keeps its range in the name. year: null = the CV gives no year.
+// 2025–2026 added from the events and photos the group sent (Oct 2026), matching `tours`.
 export const festivalsByYear: { year: string | null; items: string[] }[] = [
+  {
+    year: "2026",
+    items: [
+      "Carnaval de Barranquilla · 2023 – 2024, 2026",
+      "Carnaval del Río — Malecón de Barranquilla",
+      "Carnaval del Atlántico — Galapa, Atlántico",
+      "Festival Nacional de la Alegría — Candelaria, Atlántico",
+      "Festival Nacional del Caimán Cienaguero · 2015 – 2024, 2026",
+      "Fiestas del Mar — Santa Marta · 2022, 2023, 2026",
+      "Día Internacional de la Danza",
+    ],
+  },
+  {
+    year: "2025",
+    items: [
+      "Festival Nacional de Danzas Folclóricas Costumbristas",
+      "Conmemoración de la Masacre de las Bananeras",
+    ],
+  },
   {
     year: "2024",
     items: [
@@ -438,8 +458,6 @@ export const festivalsByYear: { year: string | null; items: string[] }[] = [
       "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre",
       "Festival Internacional de Danza Ruta Transístmica — Panamá",
       "Celebración del Día Internacional de la Danza — Magdalena",
-      "Carnaval de Barranquilla · 2023 – 2024",
-      "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
     ],
   },
   {
@@ -448,7 +466,6 @@ export const festivalsByYear: { year: string | null; items: string[] }[] = [
       "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca",
       "Festival Nacional Labrando Danza — Tenjo, Cundinamarca",
       "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca",
-      "Fiestas del Mar — Santa Marta · 2022, 2023",
       "Día Nacional de la Cumbia — Santa Marta, Magdalena",
       "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza»",
       "Festival Internacional de Danzas Trietnia",
