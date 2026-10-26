@@ -6,8 +6,17 @@ import { tours } from "@/content/site";
 import { photoLayer } from "@/lib/photo";
 import { useLanguage } from "./LanguageProvider";
 
-// Only tours with a real photo are shown; the others stay in site.ts and appear once a photo is added.
-const shown = tours.filter((tour) => tour.photo);
+// Latest year a tour mentions: "2023 – 2024, 2026" → 2026.
+const latestYear = (year: string) => Math.max(...(year.match(/\d{4}/g) ?? ["0"]).map(Number));
+
+// Only tours with a real photo are shown (the others stay in site.ts and appear once a
+// photo is added), newest first. Same year keeps the order in site.ts.
+const shown = tours.filter((tour) => tour.photo).sort((a, b) => latestYear(b.year) - latestYear(a.year));
+
+// Self-check: ranges and lists resolve to their last year.
+if (process.env.NODE_ENV !== "production") {
+  console.assert(latestYear("2023 – 2024, 2026") === 2026 && latestYear("2015 – 2024") === 2024, "latestYear");
+}
 
 export function Tours() {
   const { lang, t } = useLanguage();
@@ -82,7 +91,7 @@ export function Tours() {
                 <div className="relative h-[44svh] overflow-hidden">
                   <div
                     className="tour-media absolute -inset-x-[15%] inset-y-0"
-                    style={{ background: `${photoLayer(tour.photo)}linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})` }}
+                    style={{ background: photoLayer(tour.photo, `linear-gradient(120deg, ${tour.palette[0]}, ${tour.palette[1]})`) }}
                     aria-hidden="true"
                   />
                 </div>
@@ -92,7 +101,8 @@ export function Tours() {
                   ) : (
                     <h3 className="display text-xl md:text-2xl">{tour.event[lang]}</h3>
                   )}
-                  <span className="label shrink-0 text-mute">{tour.year}</span>
+                  {/* Latest year only; the full ranges stay in Trayectoria. */}
+                  <span className="label shrink-0 text-mute">{latestYear(tour.year)}</span>
                 </div>
                 {tour.city && (
                   <p className="label mt-3 text-mute">

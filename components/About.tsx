@@ -156,7 +156,7 @@ export function About() {
                 {/* Inner layer zooms on hover, clipped by the button so it never spills onto a neighbour. */}
                 <span
                   className="block h-full w-full transition-transform duration-700 ease-out hover:scale-110"
-                  style={{ background: `${photoLayer(img.photo)}linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})` }}
+                  style={{ background: photoLayer(img.photo, `linear-gradient(150deg, ${img.palette[0]}, ${img.palette[1]})`) }}
                 />
               </button>
             ))}
@@ -227,7 +227,7 @@ export function About() {
         {/* Same fill as Nuestro folclor: a blurred, darkened copy of the open photo. */}
         {viewing !== null && (
           <div key={viewing} className="pointer-events-none fixed inset-0 overflow-hidden motion-safe:animate-[fade-in_300ms_ease-out]" aria-hidden="true">
-            <div className="absolute inset-0 scale-110 blur-2xl" style={{ background: photoLayer(gallery[viewing]).replace(/, $/, "") }} />
+            <div className="absolute inset-0 scale-110 blur-2xl" style={{ background: photoLayer(gallery[viewing]) }} />
             <div className="absolute inset-0 bg-black/45" />
           </div>
         )}

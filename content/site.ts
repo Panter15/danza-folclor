@@ -41,9 +41,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     navPerformances: "Nuestro folclor",
     navTours: "Giras",
     navContact: "Contacto",
-    heroLine1: "Bailamos",
-    heroLine2: "la memoria",
-    heroLine3: "de Colombia",
     aboutTitle: "¿Quiénes somos?",
     aboutBody:
       "La Fundación Cultural y Social Ancestros, con domicilio en Ciénaga, Magdalena, fue creada el 26 de agosto de 2014. Es una entidad sin ánimo de lucro cuyo objeto social es la formación, práctica, circulación y desarrollo de las artes y la cultura, salvaguardando los saberes vernáculos del territorio.",
@@ -93,9 +90,6 @@ export const ui: Record<Lang, Record<string, string>> = {
     navPerformances: "Our folklore",
     navTours: "Tours",
     navContact: "Contact",
-    heroLine1: "We dance",
-    heroLine2: "the memory",
-    heroLine3: "of Colombia",
     aboutTitle: "About us",
     aboutBody:
       "The Ancestros Cultural and Social Foundation, based in Ciénaga, Magdalena, was founded on 26 August 2014. It is a non-profit organisation whose purpose is the training, practice, circulation and development of the arts and culture, safeguarding the vernacular knowledge of the region.",
@@ -148,9 +142,33 @@ export const sections = [
   { id: "contacto", labelKey: "navContact" },
 ] as const;
 
-// Hero clip: 10 silent seconds (157.5–167.5 s) of a cumbia performance from the
-// group's WhatsApp video, re-encoded to WebM (~2 MB). It plays once and stops.
-export const heroVideo = { src: "/hero/hero.webm", poster: "/hero/hero-poster.webp" };
+// Hero clip: a 17 s silent montage (WebM, ~2.3 MB) of the group's five WhatsApp videos
+// from 2026-10-17, in this order: 16.34.33 @157.5 s, 16.34.29 @89 s, 16.33.24 @113 s,
+// 16.33.16 @105 s, 16.33.19 @89 s (~3.5 s each). It loops only while the hero is on screen.
+// phoneSrc: the same montage for upright screens, 540x934, three whole frames stacked,
+// each a third of the loop apart (~2.3 MB). Posters are the stills shown before
+// playback and, with reduced motion, instead of the video.
+export const heroVideo = {
+  src: "/hero/hero.webm",
+  phoneSrc: "/hero/hero-phone.webm",
+  poster: "/hero/hero-poster.webp",
+  phonePoster: "/hero/hero-phone-poster.webp",
+};
+
+// Hero headlines, shown in turn over the video, all white; the `sway` word keeps
+// swaying gently. Wording from the site/CV: the original tagline, the mission
+// (training artists) and the CV's "Región Caribe". Not the About headline: it would
+// repeat right below.
+export const heroTitles: { lines: Record<Lang, string[]>; sway: Localized }[] = [
+  {
+    lines: { es: ["Bailamos", "la memoria", "de Colombia"], en: ["We dance", "the memory", "of Colombia"] },
+    sway: { es: "Colombia", en: "Colombia" },
+  },
+  {
+    lines: { es: ["Formamos", "artistas", "del Caribe"], en: ["Training", "artists", "of the Caribbean"] },
+    sway: { es: "Caribe", en: "Caribbean" },
+  },
+];
 
 // Photos that fly past the history headline.
 export const flyingImages: { palette: [string, string]; photo?: string }[] = [
@@ -430,7 +448,27 @@ export const projects: Localized[] = [
 // Festival names are proper nouns, so one list serves both languages (hv ancestros.pdf, page 14).
 // Grouped by year, newest first. A festival spanning several years sits under its latest
 // one and keeps its range in the name. year: null = the CV gives no year.
+// 2025–2026 added from the events and photos the group sent (Oct 2026), matching `tours`.
 export const festivalsByYear: { year: string | null; items: string[] }[] = [
+  {
+    year: "2026",
+    items: [
+      "Carnaval de Barranquilla · 2023 – 2024, 2026",
+      "Carnaval del Río — Malecón de Barranquilla",
+      "Carnaval del Atlántico — Galapa, Atlántico",
+      "Festival Nacional de la Alegría — Candelaria, Atlántico",
+      "Festival Nacional del Caimán Cienaguero · 2015 – 2024, 2026",
+      "Fiestas del Mar — Santa Marta · 2022, 2023, 2026",
+      "Día Internacional de la Danza",
+    ],
+  },
+  {
+    year: "2025",
+    items: [
+      "Festival Nacional de Danzas Folclóricas Costumbristas",
+      "Conmemoración de la Masacre de las Bananeras",
+    ],
+  },
   {
     year: "2024",
     items: [
@@ -438,8 +476,6 @@ export const festivalsByYear: { year: string | null; items: string[] }[] = [
       "Festival Nacional de Danzas Flor María Gonzales — Corozal, Sucre",
       "Festival Internacional de Danza Ruta Transístmica — Panamá",
       "Celebración del Día Internacional de la Danza — Magdalena",
-      "Carnaval de Barranquilla · 2023 – 2024",
-      "Festival Nacional del Caimán Cienaguero · 2015 – 2024",
     ],
   },
   {
@@ -448,7 +484,6 @@ export const festivalsByYear: { year: string | null; items: string[] }[] = [
       "Festival Nacional de Danza Luis Eduardo Rozo — Facatativá, Cundinamarca",
       "Festival Nacional Labrando Danza — Tenjo, Cundinamarca",
       "Festival Nacional de la Colombianidad — Tocancipá, Cundinamarca",
-      "Fiestas del Mar — Santa Marta · 2022, 2023",
       "Día Nacional de la Cumbia — Santa Marta, Magdalena",
       "Festival Internacional Al Compás de la Ruta del Dorado «El mundo danza»",
       "Festival Internacional de Danzas Trietnia",
