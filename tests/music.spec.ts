@@ -1,7 +1,7 @@
 import { devices, expect, test, type Page } from "@playwright/test";
 
-// The real MP3 is git-ignored until the rights are cleared, so serve one second of
-// silence (8-bit WAV) in its place: the tests then run with or without the song.
+// Serve one second of silence (8-bit WAV) instead of the real 6 MB song: faster,
+// and the tests don't depend on which recording the site uses.
 function silentWav(seconds = 1, rate = 8000) {
   const size = rate * seconds;
   const b = Buffer.alloc(44 + size, 128); // 128 = silence in 8-bit PCM
